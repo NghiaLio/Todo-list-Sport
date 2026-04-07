@@ -140,7 +140,7 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
       child: Builder(
         builder: (blocContext) => Scaffold(
           backgroundColor: AppTheme.backgroundColor,
-          appBar: _buildAppBar(),
+          appBar: const _AppBarWidget(),
           body: Column(
             children: [
               // Sports Icons Horizontal List - Fixed
@@ -154,7 +154,7 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
                     String iconPath = 'assets/$sportNameLower.png';
                     bool isSelected = selectedSport == sport;
 
-                    return _buildSportsCardFilterItem(
+                    return _SportsCardFilterItemWidget(
                       name: _getSportDisplayName(sport),
                       icon: iconPath,
                       isSelected: isSelected,
@@ -166,7 +166,14 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
                 ),
               ),
               // Scrollable Events List
-              Expanded(child: _buildTasksList()),
+              Expanded(
+                child: _TasksListWidget(
+                  selectedSport: selectedSport,
+                  rejectedStatus: rejectedStatus,
+                  onUpdateTask: updateTask,
+                  onDeleteTask: _deleteTask,
+                ),
+              ),
             ],
           ),
           floatingActionButton: CustomFloatingActionButton(
@@ -178,15 +185,43 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
     );
   }
 
-  Widget _buildTasksList() {
+  String _getSportDisplayName(SportType sport) {
+    switch (sport) {
+      case SportType.football:
+        return 'Football';
+      case SportType.basketball:
+        return 'Basketball';
+      case SportType.volleyball:
+        return 'Volleyball';
+      case SportType.golf:
+        return 'Golf';
+      case SportType.rugby:
+        return 'Rugby';
+    }
+  }
+}
+
+class _TasksListWidget extends StatelessWidget {
+  final SportType? selectedSport;
+  final Map<int, bool> rejectedStatus;
+  final void Function(BuildContext, TaskSportCardModel) onUpdateTask;
+  final void Function(BuildContext, String) onDeleteTask;
+
+  const _TasksListWidget({
+    required this.selectedSport,
+    required this.rejectedStatus,
+    required this.onUpdateTask,
+    required this.onDeleteTask,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return BlocConsumer<SportsCubit, SportsState>(
       buildWhen: (previous, current) {
         return current is SportsLoading || current is SportsLoaded;
       },
       listener: (context, state) {
-        if (state is SportsLoaded) {
-          tasks = List.from(state.tasks);
-        } else if (state is SportsError) {
+        if (state is SportsError) {
           ShowSnackBar.show(
             context,
             message: state.message,
@@ -195,9 +230,10 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
         }
       },
       builder: (context, state) {
-        if (state is SportsLoading && tasks.isEmpty) {
+        final mockTasks = context.read<SportsCubit>().state is SportsLoaded ? (context.read<SportsCubit>().state as SportsLoaded).tasks : <TaskSportCardModel>[];
+        if (state is SportsLoading && mockTasks.isEmpty) {
           return ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             itemCount: 4,
             itemBuilder: (context, index) {
               return const Padding(
@@ -208,7 +244,7 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
           );
         }
 
-        final sourceTasks = state is SportsLoaded ? state.tasks : tasks;
+        final sourceTasks = state is SportsLoaded ? state.tasks : mockTasks;
 
         // Filter tasks by selected sport
         final filteredTasks = sourceTasks
@@ -222,7 +258,7 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.sports_score_outlined,
                     size: 56,
                     color: AppTheme.grey400Color,
@@ -268,38 +304,57 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
         }
 
         return ListView.builder(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           itemCount: itemsList.length,
           itemBuilder: (context, index) {
             final item = itemsList[index];
 
             if (item['type'] == 'header') {
               return Padding(
-                padding: EdgeInsets.only(top: 16, bottom: 12),
+                padding: const EdgeInsets.only(top: 16, bottom: 12),
                 child: DateHeader(date: item['date']),
               );
             } else {
               final task = item['task'] as TaskSportCardModel;
-              return _buildTaskItem(task, index, context);
+              return _TaskItemWidget(
+                task: task,
+                index: index,
+                rejectedStatus: rejectedStatus,
+                onUpdateTask: onUpdateTask,
+                onDeleteTask: onDeleteTask,
+              );
             }
           },
         );
       },
     );
   }
+}
 
-  Widget _buildTaskItem(
-    TaskSportCardModel task,
-    int index,
-    BuildContext blocContext,
-  ) {
+class _TaskItemWidget extends StatelessWidget {
+  final TaskSportCardModel task;
+  final int index;
+  final Map<int, bool> rejectedStatus;
+  final void Function(BuildContext, TaskSportCardModel) onUpdateTask;
+  final void Function(BuildContext, String) onDeleteTask;
+
+  const _TaskItemWidget({
+    required this.task,
+    required this.index,
+    required this.rejectedStatus,
+    required this.onUpdateTask,
+    required this.onDeleteTask,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.whiteColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppTheme.cardBorderColor, width: 1),
       ),
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -314,23 +369,23 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
                 Text(
                   'Time: ${TimeConvert.convertStringTimeToStringTime(task.time)}',
                   style: Theme.of(
-                    blocContext,
+                    context,
                   ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 // Location
                 Text(
                   'Location: ${task.location}',
                   style: Theme.of(
-                    blocContext,
+                    context,
                   ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 // Scored
                 Text(
                   'Scored: ${task.scored}',
                   style: Theme.of(
-                    blocContext,
+                    context,
                   ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
@@ -343,16 +398,16 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
               isCompleted: task.isCompleted,
               isRejected: rejectedStatus[index] ?? false,
               onConfirm: () {
-                updateTask(blocContext, task);
+                onUpdateTask(context, task);
               },
               onReject: () {
                 // Show confirmation dialog before setting reject status
                 showDialog(
-                  context: blocContext,
-                  builder: (BuildContext context) {
+                  context: context,
+                  builder: (BuildContext dialogContext) {
                     return ConfirmRejectDialog(
                       onConfirm: () {
-                        _deleteTask(blocContext, task.id);
+                        onDeleteTask(context, task.id);
                       },
                     );
                   },
@@ -364,8 +419,13 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
       ),
     );
   }
+}
 
-  PreferredSizeWidget _buildAppBar() {
+class _AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
+  const _AppBarWidget();
+
+  @override
+  Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       elevation: 0,
@@ -386,20 +446,32 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
     );
   }
 
-  Widget _buildSportsCardFilterItem({
-    required String name,
-    required String icon,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _SportsCardFilterItemWidget extends StatelessWidget {
+  final String name;
+  final String icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _SportsCardFilterItemWidget({
+    required this.name,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 78,
-        // margin: EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.primaryColor : AppTheme.whiteColor,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(16),
             bottomRight: Radius.circular(16),
           ),
@@ -412,7 +484,6 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
               height: 45,
               child: Image.asset(icon, fit: BoxFit.contain),
             ),
-            // SizedBox(height: 8),
             Text(
               name,
               style: Theme.of(
@@ -424,20 +495,5 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
         ),
       ),
     );
-  }
-
-  String _getSportDisplayName(SportType sport) {
-    switch (sport) {
-      case SportType.football:
-        return 'Football';
-      case SportType.basketball:
-        return 'Basketball';
-      case SportType.volleyball:
-        return 'Volleyball';
-      case SportType.golf:
-        return 'Golf';
-      case SportType.rugby:
-        return 'Rugby';
-    }
   }
 }

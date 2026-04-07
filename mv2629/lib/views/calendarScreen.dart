@@ -91,7 +91,46 @@ class _CalendarScreenState extends State<CalendarScreen> {
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(children: [_buildCalendar(), _buildTaskList()]),
+                child: Column(
+                  children: [
+                    _CalendarWidget(
+                      dialogCalendarPickerValue: _dialogCalendarPickerValue,
+                      onValueChanged: (dates) {
+                        setState(() {
+                          _dialogCalendarPickerValue = dates;
+                        });
+
+                        if (dates.isNotEmpty) {
+                          final picked = dates.first;
+                          if (picked != null) {
+                            _selectedDate = DateTime(
+                              picked.year,
+                              picked.month,
+                              picked.day,
+                            );
+                            _fetchTasksForSelectedDate();
+                          }
+                        }
+                      },
+                      onDateSelected: (date) {
+                        setState(() {
+                          _selectedDate = DateTime(
+                            date.year,
+                            date.month,
+                            date.day,
+                          );
+                          _dialogCalendarPickerValue = [_selectedDate];
+                        });
+                        _fetchTasksForSelectedDate();
+                      },
+                    ),
+                    _TaskListWidget(
+                      isLoadingTasks: _isLoadingTasks,
+                      dayTasks: _dayTasks,
+                      onRefresh: _fetchTasksForSelectedDate,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -104,7 +143,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  Widget _buildCalendar() {
+}
+
+class _CalendarWidget extends StatelessWidget {
+  final List<DateTime?> dialogCalendarPickerValue;
+  final ValueChanged<List<DateTime?>> onValueChanged;
+  final ValueChanged<DateTime> onDateSelected;
+
+  const _CalendarWidget({
+    required this.dialogCalendarPickerValue,
+    required this.onValueChanged,
+    required this.onDateSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final dayCircleSize = (MediaQuery.sizeOf(context).width * 0.1)
         .clamp(36.0, 48.0)
         .toDouble();
@@ -196,19 +249,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           return GestureDetector(
                             onTap: isDisabled == true
                                 ? null
-                                : () {
-                                    setState(() {
-                                      _selectedDate = DateTime(
-                                        date.year,
-                                        date.month,
-                                        date.day,
-                                      );
-                                      _dialogCalendarPickerValue = [
-                                        _selectedDate,
-                                      ];
-                                    });
-                                    _fetchTasksForSelectedDate();
-                                  },
+                                : () => onDateSelected(date),
                             child: FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Column(
@@ -250,22 +291,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           );
                         },
                   ),
-                  value: _dialogCalendarPickerValue,
-                  onValueChanged: (dates) {
-                    setState(() {
-                      _dialogCalendarPickerValue = dates;
-                    });
-
-                    if (dates.isNotEmpty) {
-                      final picked = dates.first;
-                      _selectedDate = DateTime(
-                        picked.year,
-                        picked.month,
-                        picked.day,
-                      );
-                      _fetchTasksForSelectedDate();
-                    }
-                  },
+                  value: dialogCalendarPickerValue,
+                  onValueChanged: onValueChanged,
                 ),
               ),
             ),
@@ -274,21 +301,34 @@ class _CalendarScreenState extends State<CalendarScreen> {
       },
     );
   }
+}
 
-  Widget _buildTaskList() {
+class _TaskListWidget extends StatelessWidget {
+  final bool isLoadingTasks;
+  final List<TaskTodoModel>? dayTasks;
+  final VoidCallback onRefresh;
+
+  const _TaskListWidget({
+    required this.isLoadingTasks,
+    this.dayTasks,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return BlocListener<TaskTodoCubit, TodoTaskState>(
       listenWhen: (previous, current) => current is TodoTaskLoaded,
       listener: (context, state) {
         if (state is TodoTaskLoaded) {
-          _fetchTasksForSelectedDate();
+          onRefresh();
         }
       },
-      child: _buildTaskListContent(),
+      child: _buildContent(),
     );
   }
 
-  Widget _buildTaskListContent() {
-    if (_isLoadingTasks || _dayTasks == null) {
+  Widget _buildContent() {
+    if (isLoadingTasks || dayTasks == null) {
       return ListView.builder(
         padding: EdgeInsets.zero,
         shrinkWrap: true,
@@ -298,7 +338,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       );
     }
 
-    if (_dayTasks!.isEmpty) {
+    if (dayTasks!.isEmpty) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 16),
         child: Text('No tasks for selected day'),
@@ -309,9 +349,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
       padding: EdgeInsets.zero,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: _dayTasks!.length,
+      itemCount: dayTasks!.length,
       itemBuilder: (context, index) {
-        final task = _dayTasks![index];
+        final task = dayTasks![index];
         return TaskContentCard(
           taskName: task.taskName,
           content: task.content,

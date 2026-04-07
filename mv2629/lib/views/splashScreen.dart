@@ -24,11 +24,11 @@ class SplashScreen extends StatelessWidget {
           Expanded(
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: _buildIllustration(),
+              child: const _IllustrationWidget(),
             ),
           ),
           // Phần giữa: Text content
-          _buildTextContent(context),
+          const _TextContentWidget(),
           SizedBox(height: 60),
           ButtonArrow(
             onPressed: () => _navigateToHome(context),
@@ -41,14 +41,25 @@ class SplashScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildIllustration() {
+}
+
+class _IllustrationWidget extends StatelessWidget {
+  const _IllustrationWidget();
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Image.asset('assets/logo.png', width: 298, height: 298),
     );
   }
+}
 
-  Widget _buildTextContent(BuildContext context) {
+class _TextContentWidget extends StatelessWidget {
+  const _TextContentWidget();
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
       child: Column(
@@ -61,7 +72,7 @@ class SplashScreen extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           Text(
             'where your plans come into\nfocus!',
             textAlign: TextAlign.center,

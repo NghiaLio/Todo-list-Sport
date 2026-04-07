@@ -29,26 +29,28 @@ class _HomeState extends State<Home> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: AppTheme.grey100Color,
-      drawer: _buildDrawer(context),
+      drawer: _DrawerWidget(onNavigate: _navigateFromDrawer),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // AppBar
-              _buildAppBar(),
+              _AppBarWidget(
+                onOpenDrawer: () => _scaffoldKey.currentState?.openDrawer(),
+              ),
               // Welcome Box
-              _buildTextContent(context),
+              const _WelcomeTextWidget(),
 
               SizedBox(height: 32),
 
               // Sports Card
-              _buildSportsCard(_navigateToListSportTask),
+              _SportsCardWidget(onTap: _navigateToListSportTask),
 
               SizedBox(height: 16),
 
               // To Do List Card
-              _buildTodoCard(_navigateToTodoScreen),
+              _TodoCardWidget(onTap: _navigateToTodoScreen),
             ],
           ),
         ),
@@ -63,20 +65,35 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Widget _buildAppBar() {
+}
+
+class _AppBarWidget extends StatelessWidget {
+  final VoidCallback onOpenDrawer;
+
+  const _AppBarWidget({required this.onOpenDrawer});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.centerLeft,
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: IconButton(
         icon: Image.asset('assets/iconDrawer.png', width: 24, height: 24),
-        onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+        onPressed: onOpenDrawer,
       ),
     );
   }
+}
 
-  Widget _buildDrawer(BuildContext context) {
+class _DrawerWidget extends StatelessWidget {
+  final void Function(String?) onNavigate;
+
+  const _DrawerWidget({required this.onNavigate});
+
+  @override
+  Widget build(BuildContext context) {
     return Drawer(
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(0),
           bottomRight: Radius.circular(0),
@@ -102,54 +119,62 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          _buildCustomDrawerItem(
+          _CustomDrawerItem(
             icon: Icons.home,
             label: 'Home',
             isSelected: true,
-            onTap: () => _navigateFromDrawer(null),
+            onTap: () => onNavigate(null),
           ),
-          _buildCustomDrawerItem(
+          _CustomDrawerItem(
             icon: Icons.tv,
             label: 'TV show',
             isSelected: false,
-            onTap: () => _navigateFromDrawer('/tv'),
+            onTap: () => onNavigate('/tv'),
           ),
-          _buildCustomDrawerItem(
+          _CustomDrawerItem(
             icon: Icons.movie,
             label: 'Movies',
             isSelected: false,
-            onTap: () => _navigateFromDrawer('/movie'),
+            onTap: () => onNavigate('/movie'),
           ),
-          _buildCustomDrawerItem(
+          _CustomDrawerItem(
             icon: Icons.bar_chart,
             label: 'Statistical',
             isSelected: false,
-            onTap: () => _navigateFromDrawer('/statistical'),
+            onTap: () => onNavigate('/statistical'),
           ),
-          _buildCustomDrawerItem(
+          _CustomDrawerItem(
             icon: Icons.settings,
             label: 'Setting',
             isSelected: false,
-            onTap: () => _navigateFromDrawer('/settings'),
+            onTap: () => onNavigate('/settings'),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildCustomDrawerItem({
-    required IconData icon,
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
+class _CustomDrawerItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _CustomDrawerItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
-          // margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: isSelected ? AppTheme.whiteColor : AppTheme.transparentColor,
-            // borderRadius: BorderRadius.circular(8),
           ),
           child: ListTile(
             leading: Icon(
@@ -167,13 +192,18 @@ class _HomeState extends State<Home> {
           ),
         ),
         !isSelected
-            ? Divider(color: AppTheme.white50Color, thickness: 1)
-            : SizedBox.shrink(),
+            ? const Divider(color: AppTheme.white50Color, thickness: 1)
+            : const SizedBox.shrink(),
       ],
     );
   }
+}
 
-  Widget _buildTextContent(BuildContext context) {
+class _WelcomeTextWidget extends StatelessWidget {
+  const _WelcomeTextWidget();
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: Column(
@@ -187,7 +217,6 @@ class _HomeState extends State<Home> {
             ),
             textAlign: TextAlign.left,
           ),
-
           Text(
             'where your plans \ncome into focus!',
             textAlign: TextAlign.left,
@@ -199,15 +228,22 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+}
 
-  Widget _buildSportsCard(Function()? onTap) {
+class _SportsCardWidget extends StatelessWidget {
+  final VoidCallback? onTap;
+
+  const _SportsCardWidget({this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         width: double.infinity,
         height: 250,
         decoration: BoxDecoration(
-          image: DecorationImage(
+          image: const DecorationImage(
             image: AssetImage('assets/Rectangle 474.png'),
             fit: BoxFit.contain,
           ),
@@ -238,8 +274,15 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+}
 
-  Widget _buildTodoCard(Function()? onTap) {
+class _TodoCardWidget extends StatelessWidget {
+  final VoidCallback? onTap;
+
+  const _TodoCardWidget({this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<TaskTodoCubit, TodoTaskState>(
       builder: (context, state) {
         double completionRate = 0;
@@ -260,7 +303,7 @@ class _HomeState extends State<Home> {
               width: double.infinity,
               height: 250,
               decoration: BoxDecoration(
-                image: DecorationImage(
+                image: const DecorationImage(
                   image: AssetImage('assets/Rectangle 473.png'),
                   fit: BoxFit.contain,
                 ),
@@ -294,7 +337,7 @@ class _HomeState extends State<Home> {
                                     child: CircularProgressIndicator(
                                       value: completionRate,
                                       strokeWidth: 8,
-                                      valueColor: AlwaysStoppedAnimation(
+                                      valueColor: const AlwaysStoppedAnimation(
                                         AppTheme.whiteColor,
                                       ),
                                       backgroundColor: AppTheme.white20Color,
@@ -314,7 +357,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
-                    SizedBox.shrink(),
+                    const SizedBox.shrink(),
                   ],
                 ),
               ),

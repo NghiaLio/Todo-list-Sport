@@ -158,13 +158,31 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
                 child: Column(
                   children: [
                     // Tab bar
-                    _buildTabBar(),
+                    _TabBarWidget(
+                      tabController: _tabController,
+                      tabIcons: tabIcons,
+                    ),
                     const SizedBox(height: 16),
                     // Tab contents
                     Expanded(
                       child: TabBarView(
                         controller: _tabController,
-                        children: [_buildTaskNameTab(), _buildTimeTab()],
+                        children: [
+                          _TaskNameTabWidget(
+                            taskNameController: _taskNameController,
+                            contentController: _contentController,
+                          ),
+                          _TimeTabWidget(
+                            hourController: _hourController,
+                            minuteController: _minuteController,
+                            period: _period,
+                            onPeriodChanged: (newPeriod) {
+                              setState(() {
+                                _period = newPeriod;
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -177,12 +195,24 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
     );
   }
 
-  Widget _buildTaskNameTab() {
+}
+
+class _TaskNameTabWidget extends StatelessWidget {
+  final TextEditingController taskNameController;
+  final TextEditingController contentController;
+
+  const _TaskNameTabWidget({
+    required this.taskNameController,
+    required this.contentController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
           TextField(
-            controller: _taskNameController,
+            controller: taskNameController,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 24,
@@ -206,10 +236,10 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
               borderRadius: BorderRadius.circular(16),
             ),
             child: TextField(
-              controller: _contentController,
+              controller: contentController,
               maxLines: null,
               style: Theme.of(context).textTheme.bodyMedium,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Start writing here.....',
                 hintStyle: TextStyle(color: AppTheme.black54Color),
                 border: InputBorder.none,
@@ -221,8 +251,23 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
       ),
     );
   }
+}
 
-  Widget _buildTimeTab() {
+class _TimeTabWidget extends StatelessWidget {
+  final TextEditingController hourController;
+  final TextEditingController minuteController;
+  final String period;
+  final ValueChanged<String> onPeriodChanged;
+
+  const _TimeTabWidget({
+    required this.hourController,
+    required this.minuteController,
+    required this.period,
+    required this.onPeriodChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.topCenter,
       padding: EdgeInsets.symmetric(
@@ -241,7 +286,7 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
             ),
             alignment: Alignment.center,
             child: TextField(
-              controller: _hourController,
+              controller: hourController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               style: const TextStyle(
@@ -271,7 +316,7 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
             ),
             alignment: Alignment.center,
             child: TextField(
-              controller: _minuteController,
+              controller: minuteController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               style: const TextStyle(
@@ -298,13 +343,11 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _period = 'AM';
-                      });
+                      onPeriodChanged('AM');
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: _period == 'AM'
+                        color: period == 'AM'
                             ? AppTheme.primary30Color
                             : AppTheme.transparentColor,
                         borderRadius: const BorderRadius.vertical(
@@ -315,7 +358,7 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
                       child: Text(
                         'AM',
                         style: TextStyle(
-                          color: _period == 'AM'
+                          color: period == 'AM'
                               ? AppTheme.primaryColor
                               : AppTheme.greyColor,
                           fontWeight: FontWeight.bold,
@@ -328,13 +371,11 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _period = 'PM';
-                      });
+                      onPeriodChanged('PM');
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: _period == 'PM'
+                        color: period == 'PM'
                             ? AppTheme.primary30Color
                             : AppTheme.transparentColor,
                         borderRadius: const BorderRadius.vertical(
@@ -345,7 +386,7 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
                       child: Text(
                         'PM',
                         style: TextStyle(
-                          color: _period == 'PM'
+                          color: period == 'PM'
                               ? AppTheme.primaryColor
                               : AppTheme.greyColor,
                           fontWeight: FontWeight.bold,
@@ -361,10 +402,21 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
       ),
     );
   }
+}
 
-  Widget _buildTabBar() {
+class _TabBarWidget extends StatelessWidget {
+  final TabController tabController;
+  final List<IconData> tabIcons;
+
+  const _TabBarWidget({
+    required this.tabController,
+    required this.tabIcons,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return TabBar(
-      controller: _tabController,
+      controller: tabController,
       indicatorColor: AppTheme.transparentColor,
       dividerColor: AppTheme.transparentColor,
       labelColor: AppTheme.primaryColor,

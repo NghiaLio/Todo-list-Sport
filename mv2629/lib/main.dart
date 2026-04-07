@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mv2629/bloc/sports/sportsCubit.dart';
 import 'package:mv2629/bloc/todos/todosCubit.dart';
+import 'package:mv2629/bloc/tvShows/tvShowCubit.dart';
 import 'package:mv2629/models/taskSportCard.dart';
 import 'package:mv2629/models/taskTodoModel.dart';
 import 'package:mv2629/views/addTaskCalendarScreen.dart';
@@ -20,6 +23,7 @@ import 'constants/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await initializeDateFormatting('ms_MY', null);
   final appDocDir = await getApplicationDocumentsDirectory();
   Hive.init(appDocDir.path);
@@ -45,6 +49,12 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<TaskTodoCubit>(
           create: (_) => TaskTodoCubit()..loadInitial(),
+        ),
+        BlocProvider<SportsCubit>(
+          create: (_) => SportsCubit()..loadAllTasks(),
+        ),
+        BlocProvider<TvShowCubit>(
+          create: (_) => TvShowCubit(),
         ),
       ],
       child: MaterialApp(

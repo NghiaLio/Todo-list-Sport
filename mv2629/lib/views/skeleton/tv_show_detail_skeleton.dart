@@ -59,11 +59,11 @@ class TvShowDetailSkeleton extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            _titleBlock(context),
+            const _TitleBlockWidget(),
             const SizedBox(height: 8),
-            ...List.generate(5, (_) => _infoRowBlock()),
+            ...List.generate(5, (_) => const _InfoRowBlockWidget()),
             const SizedBox(height: 12),
-            _titleBlock(context),
+            const _TitleBlockWidget(),
             const SizedBox(height: 16),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.25,
@@ -87,7 +87,13 @@ class TvShowDetailSkeleton extends StatelessWidget {
     );
   }
 
-  Widget _titleBlock(BuildContext context) {
+}
+
+class _TitleBlockWidget extends StatelessWidget {
+  const _TitleBlockWidget();
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.34,
       height: 20,
@@ -97,8 +103,13 @@ class TvShowDetailSkeleton extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _infoRowBlock() {
+class _InfoRowBlockWidget extends StatelessWidget {
+  const _InfoRowBlockWidget();
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Column(

@@ -23,9 +23,12 @@ class Settingscreen extends StatelessWidget {
                 .map(
                   (option) => Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: _buildSettingsOption(context, option, () {
-                      // Handle option tap
-                    }),
+                    child: _SettingsOptionWidget(
+                      title: option,
+                      onTap: () {
+                        // Handle option tap
+                      },
+                    ),
                   ),
                 )
                 .toList(),
@@ -35,11 +38,19 @@ class Settingscreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingsOption(
-    BuildContext context,
-    String title,
-    VoidCallback onTap,
-  ) {
+}
+
+class _SettingsOptionWidget extends StatelessWidget {
+  final String title;
+  final VoidCallback onTap;
+
+  const _SettingsOptionWidget({
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

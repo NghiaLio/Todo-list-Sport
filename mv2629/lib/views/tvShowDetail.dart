@@ -156,17 +156,17 @@ class _TvShowDetailState extends State<TvShowDetail> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    _buildInfoRow('RUNTIME', '37 Minutes'),
-                    _buildInfoRow(
-                      'TOTAL RUNTIME',
-                      '9 Hours 15 Minutes — 15 Episodes',
+                    _InfoRowWidget(title: 'RUNTIME', content: '37 Minutes'),
+                    _InfoRowWidget(
+                      title: 'TOTAL RUNTIME',
+                      content: '9 Hours 15 Minutes — 15 Episodes',
                     ),
-                    _buildInfoRow('LANGUAGES', 'English'),
-                    _buildInfoRow(
-                      'GENRES',
-                      '🚀 Science Fiction, 👽 Fantasy, 👊 Action, 🗺️ Adventure',
+                    _InfoRowWidget(title: 'LANGUAGES', content: 'English'),
+                    _InfoRowWidget(
+                      title: 'GENRES',
+                      content: '🚀 Science Fiction, 👽 Fantasy, 👊 Action, 🗺️ Adventure',
                     ),
-                    _buildInfoRow('OVERVIEW', 'content'),
+                    _InfoRowWidget(title: 'OVERVIEW', content: 'content'),
                     const SizedBox(height: 12),
 
                     // 5. More Like This Section
@@ -212,7 +212,19 @@ class _TvShowDetailState extends State<TvShowDetail> {
     );
   }
 
-  Widget _buildInfoRow(String title, String content) {
+}
+
+class _InfoRowWidget extends StatelessWidget {
+  final String title;
+  final String content;
+
+  const _InfoRowWidget({
+    required this.title,
+    required this.content,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -3,6 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:mv2629/constants/theme.dart';
 import 'package:mv2629/widgets/custom_header.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mv2629/bloc/todos/todosCubit.dart';
+import 'package:mv2629/bloc/todos/todosState.dart';
+import 'package:mv2629/bloc/sports/sportsCubit.dart';
+import 'package:mv2629/bloc/sports/sportsState.dart';
 
 class Statisticalscreen extends StatelessWidget {
   const Statisticalscreen({super.key});
@@ -13,28 +18,66 @@ class Statisticalscreen extends StatelessWidget {
       backgroundColor: AppTheme.dividerSoftColor,
       appBar: buildAppBar(context, 'STATISTICAL'),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _StatRing(
-                  progress: 0.84,
-                  percentageLabel: '84%',
-                  progressColor: AppTheme.statisticalCompletedColor,
-                  title: 'Completed',
-                ),
-                SizedBox(height: 26),
-                _StatRing(
-                  progress: 0.13,
-                  percentageLabel: '13%',
-                  progressColor: AppTheme.statisticalNotStartedColor,
-                  title: 'Not Started',
-                ),
-              ],
-            ),
-          ),
+        child: BlocBuilder<TaskTodoCubit, TodoTaskState>(
+          builder: (context, todoState) {
+            return BlocBuilder<SportsCubit, SportsState>(
+              builder: (context, sportsState) {
+                int totalTasks = 0;
+                int completedTasks = 0;
+
+                // Todo Tasks Calculation
+                if (todoState is TodoTaskLoaded) {
+                  totalTasks += todoState.totalCount;
+                  completedTasks +=
+                      (todoState.totalCount * todoState.completionRate).round();
+                }
+
+                // Sports Tasks Calculation
+                if (sportsState is SportsLoaded) {
+                  totalTasks += sportsState.tasks.length;
+                  completedTasks += sportsState.tasks
+                      .where((t) => t.isCompleted)
+                      .length;
+                }
+
+                double progressCompleted = totalTasks == 0
+                    ? 0
+                    : completedTasks / totalTasks;
+                double progressNotStarted = totalTasks == 0
+                    ? 0
+                    : 1.0 - progressCompleted;
+
+                return Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 20,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _StatRing(
+                          progress: progressCompleted,
+                          percentageLabel:
+                              '${(progressCompleted * 100).round()}%',
+                          progressColor: AppTheme.statisticalCompletedColor,
+                          title: 'Completed',
+                        ),
+                        const SizedBox(height: 26),
+                        _StatRing(
+                          progress: progressNotStarted,
+                          percentageLabel:
+                              '${(progressNotStarted * 100).round()}%',
+                          progressColor: AppTheme.statisticalNotStartedColor,
+                          title: 'Not Started',
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );

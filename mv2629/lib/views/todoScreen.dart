@@ -35,13 +35,19 @@ class _TodoScreenState extends State<TodoScreen> {
             rightIconAsset: 'assets/calendar.png',
             onRightIconTap: () => Navigator.pushNamed(context, '/calendar'),
           ),
-          Expanded(child: _buildTaskList(context)),
+          Expanded(child: const _TaskListWidget()),
         ],
       ),
     );
   }
 
-  Widget _buildTaskList(BuildContext blocContext) {
+}
+
+class _TaskListWidget extends StatelessWidget {
+  const _TaskListWidget();
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<TaskTodoCubit, TodoTaskState>(
       buildWhen: (previous, current) =>
           current is TodoTaskLoaded ||
@@ -71,8 +77,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   Text(state.message, textAlign: TextAlign.center),
                   const SizedBox(height: 12),
                   ElevatedButton(
-                    onPressed: () =>
-                        blocContext.read<TaskTodoCubit>().refresh(),
+                    onPressed: () => context.read<TaskTodoCubit>().refresh(),
                     child: const Text('Try again'),
                   ),
                 ],
@@ -103,10 +108,10 @@ class _TodoScreenState extends State<TodoScreen> {
                   time: item.task!.time,
                   isCompleted: item.task!.isCompleted,
                   isRejected: false,
-                  onConfirm: () => blocContext
+                  onConfirm: () => context
                       .read<TaskTodoCubit>()
                       .toggleTaskCompletion(item.task!),
-                  onReject: () => blocContext.read<TaskTodoCubit>().deleteTask(
+                  onReject: () => context.read<TaskTodoCubit>().deleteTask(
                     item.task!.id,
                   ),
                 ),
