@@ -5,29 +5,29 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/tvShows/tvShowCubit.dart';
-import 'package:mv2629/bloc/tvShows/tvShowState.dart';
+import 'package:mv2629/bloc/movies/movieCubit.dart';
+import 'package:mv2629/bloc/movies/movieState.dart';
 import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/models/filterTvShow.dart';
+import 'package:mv2629/models/filterMovie.dart';
+import 'package:mv2629/models/movie.dart';
 import 'package:mv2629/models/taskSportCard.dart';
-import 'package:mv2629/models/tvShow.dart';
 import 'package:mv2629/utils/image_helper.dart';
+import 'package:mv2629/views/movieScreenDetail.dart';
 import 'package:mv2629/views/skeleton/image_skeleton.dart';
 import 'package:mv2629/views/skeleton/tv_show_card_skeleton.dart';
-import 'package:mv2629/views/tvShowDetail.dart';
 import 'package:mv2629/widgets/custom_header.dart';
 import 'package:mv2629/widgets/media_screen_widgets.dart';
 import 'package:mv2629/widgets/showSnackBar.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
-class Tvscreen extends StatefulWidget {
-  const Tvscreen({super.key});
+class MovieScreen extends StatefulWidget {
+  const MovieScreen({super.key});
 
   @override
-  State<Tvscreen> createState() => _TvscreenState();
+  State<MovieScreen> createState() => _MovieScreenState();
 }
 
-class _TvscreenState extends State<Tvscreen> {
+class _MovieScreenState extends State<MovieScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
@@ -35,7 +35,7 @@ class _TvscreenState extends State<Tvscreen> {
   @override
   void initState() {
     super.initState();
-    context.read<TvShowCubit>().init();
+    context.read<MovieCubit>().init();
     _scrollController.addListener(_onScroll);
   }
 
@@ -51,9 +51,9 @@ class _TvscreenState extends State<Tvscreen> {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (value.trim().isEmpty) {
-        context.read<TvShowCubit>().clearSearch();
+        context.read<MovieCubit>().clearSearch();
       } else {
-        context.read<TvShowCubit>().search(value.trim());
+        context.read<MovieCubit>().search(value.trim());
       }
     });
   }
@@ -61,11 +61,11 @@ class _TvscreenState extends State<Tvscreen> {
   void _onScroll() {
     final pos = _scrollController.position;
     if (pos.pixels >= pos.maxScrollExtent - 300) {
-      context.read<TvShowCubit>().loadMore();
+      context.read<MovieCubit>().loadMore();
     }
   }
 
-  void _openFilterSheet(FilterTvShow current) {
+  void _openFilterSheet(FilterMovie current) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -80,8 +80,8 @@ class _TvscreenState extends State<Tvscreen> {
           sportKeyword: current.sportKeyword,
         ),
         onApply: (newFilter) {
-          context.read<TvShowCubit>().updateFilter(
-                FilterTvShow(
+          context.read<MovieCubit>().updateFilter(
+                FilterMovie(
                   minRating: newFilter.minRating,
                   maxRating: newFilter.maxRating,
                   fromYear: newFilter.fromYear,
@@ -91,7 +91,7 @@ class _TvscreenState extends State<Tvscreen> {
                 ),
               );
         },
-        onClear: () => context.read<TvShowCubit>().clearFilter(),
+        onClear: () => context.read<MovieCubit>().clearFilter(),
       ),
     );
   }
@@ -100,35 +100,35 @@ class _TvscreenState extends State<Tvscreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.whiteColor,
-      appBar: buildAppBar(context, 'TV Shows'),
+      appBar: buildAppBar(context, 'Movies'),
       body: Column(
         children: [
-          BlocBuilder<TvShowCubit, TvShowState>(
+          BlocBuilder<MovieCubit, MovieState>(
             buildWhen: (prev, curr) {
-              if (curr is TvShowLoaded && prev is TvShowLoaded) {
+              if (curr is MovieLoaded && prev is MovieLoaded) {
                 return curr.activeFilter != prev.activeFilter;
               }
               return false;
             },
             builder: (context, state) {
               final activeFilter =
-                  state is TvShowLoaded ? state.activeFilter : const FilterTvShow();
+                  state is MovieLoaded ? state.activeFilter : const FilterMovie();
               return MediaSearchAndFilterBar(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
-                hintText: 'Search TV shows...',
+                hintText: 'Search movies...',
                 hasActiveFilter: !activeFilter.isEmpty,
                 onFilterTap: () => _openFilterSheet(activeFilter),
               );
             },
           ),
-          BlocBuilder<TvShowCubit, TvShowState>(
+          BlocBuilder<MovieCubit, MovieState>(
             buildWhen: (prev, curr) =>
-                (curr is TvShowLoaded) &&
-                (prev is! TvShowLoaded ||
+                (curr is MovieLoaded) &&
+                (prev is! MovieLoaded ||
                     (prev).activeFilter != (curr).activeFilter),
             builder: (context, state) {
-              if (state is! TvShowLoaded || state.activeFilter.isEmpty) {
+              if (state is! MovieLoaded || state.activeFilter.isEmpty) {
                 return const SizedBox.shrink();
               }
 
@@ -141,16 +141,16 @@ class _TvscreenState extends State<Tvscreen> {
                   sportType: state.activeFilter.sportType,
                   sportKeyword: state.activeFilter.sportKeyword,
                 ),
-                onClear: () => context.read<TvShowCubit>().clearFilter(),
+                onClear: () => context.read<MovieCubit>().clearFilter(),
                 sportLabel: _sportLabel,
               );
             },
           ),
           Expanded(
-            child: BlocConsumer<TvShowCubit, TvShowState>(
-              listenWhen: (_, curr) => curr is TvShowError,
+            child: BlocConsumer<MovieCubit, MovieState>(
+              listenWhen: (_, curr) => curr is MovieError,
               listener: (context, state) {
-                if (state is TvShowError) {
+                if (state is MovieError) {
                   ShowSnackBar.show(
                     context,
                     message: state.message,
@@ -159,20 +159,20 @@ class _TvscreenState extends State<Tvscreen> {
                 }
               },
               builder: (context, state) {
-                if (state is TvShowLoading || state is TvShowInitial) {
+                if (state is MovieLoading || state is MovieInitial) {
                   return _buildGrid(const [], showSkeleton: true);
                 }
-                if (state is TvShowLoaded) {
+                if (state is MovieLoaded) {
                   return _buildGrid(
-                    state.tvShows,
+                    state.movies,
                     showSkeleton: false,
                     isLoadingMore: state.isLoadingMore,
                   );
                 }
-                if (state is TvShowError) {
+                if (state is MovieError) {
                   return MediaErrorView(
                     message: state.message,
-                    onRetry: () => context.read<TvShowCubit>().init(),
+                    onRetry: () => context.read<MovieCubit>().init(),
                   );
                 }
                 return const SizedBox.shrink();
@@ -185,19 +185,19 @@ class _TvscreenState extends State<Tvscreen> {
   }
 
   Widget _buildGrid(
-    List<TvShow> shows, {
+    List<Movie> movies, {
     required bool showSkeleton,
     bool isLoadingMore = false,
   }) {
-    return MediaGridWidget<TvShow>(
-      items: shows,
+    return MediaGridWidget<Movie>(
+      items: movies,
       showSkeleton: showSkeleton,
       isLoadingMore: isLoadingMore,
       scrollController: _scrollController,
-      itemBuilder: (context, show) => _TvShowCard(show: show),
+      itemBuilder: (context, movie) => _MovieCard(movie: movie),
       skeletonBuilder: (_) => const TvShowCardSkeleton(),
       emptyView: const MediaEmptyView(
-        icon: Icons.tv_off_rounded,
+        icon: Icons.movie_filter_outlined,
         title: 'No results found',
         subtitle: 'Try adjusting your filters or search keyword',
       ),
@@ -240,18 +240,18 @@ class _TvscreenState extends State<Tvscreen> {
   }
 }
 
-class _TvShowCard extends StatelessWidget {
-  const _TvShowCard({required this.show});
+class _MovieCard extends StatelessWidget {
+  const _MovieCard({required this.movie});
 
-  final TvShow show;
+  final Movie movie;
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = ImageHelper.getImageUrl(show.posterPath);
+    final imageUrl = ImageHelper.getImageUrl(movie.posterPath);
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => TvShowDetail(tvShowId: show.id)),
+        MaterialPageRoute(builder: (_) => MovieScreenDetail(movieId: movie.id)),
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -280,7 +280,7 @@ class _TvShowCard extends StatelessWidget {
                           placeholder: (_, _) => const ImageSkeleton(),
                           errorWidget: (_, _, _) => const Icon(Icons.broken_image),
                         )
-                      : const Icon(Icons.tv),
+                      : const Icon(Icons.movie),
                 ),
               ),
               Container(
@@ -291,7 +291,7 @@ class _TvShowCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      show.name,
+                      movie.name,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppTheme.whiteColor,
                         fontWeight: FontWeight.bold,
@@ -306,7 +306,7 @@ class _TvShowCard extends StatelessWidget {
                         const Icon(Icons.star_rounded, color: Colors.amber, size: 12),
                         const SizedBox(width: 2),
                         Text(
-                          show.voteAverage.toStringAsFixed(1),
+                          movie.voteAverage.toStringAsFixed(1),
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: AppTheme.whiteColor,
                             fontSize: 10,
@@ -321,8 +321,8 @@ class _TvShowCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 2),
                         Text(
-                          (show.firstAirDate != null && show.firstAirDate!.length >= 4)
-                              ? show.firstAirDate!.substring(0, 4)
+                          (movie.releaseDate != null && movie.releaseDate!.length >= 4)
+                              ? movie.releaseDate!.substring(0, 4)
                               : 'N/A',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: AppTheme.whiteColor,

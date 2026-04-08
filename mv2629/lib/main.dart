@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mv2629/bloc/sports/sportsCubit.dart';
 import 'package:mv2629/bloc/todos/todosCubit.dart';
+import 'package:mv2629/bloc/movies/movieCubit.dart';
 import 'package:mv2629/bloc/tvShows/tvShowCubit.dart';
 import 'package:mv2629/models/taskSportCard.dart';
 import 'package:mv2629/models/taskTodoModel.dart';
@@ -13,7 +14,7 @@ import 'package:mv2629/views/addTaskCalendarScreen.dart';
 import 'package:mv2629/views/calendarScreen.dart';
 import 'package:mv2629/views/home.dart';
 import 'package:mv2629/views/listSportTaskScreen.dart';
-// import 'package:mv2629/views/movieScreen.dart';
+import 'package:mv2629/views/movieScreen.dart';
 import 'package:mv2629/views/settingScreen.dart';
 import 'package:mv2629/views/splashScreen.dart';
 import 'package:mv2629/views/statisticalScreen.dart';
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<SportsCubit>(create: (_) => SportsCubit()..loadAllTasks()),
         BlocProvider<TvShowCubit>(create: (_) => TvShowCubit()),
+        BlocProvider<MovieCubit>(create: (_) => MovieCubit()),
       ],
       child: MaterialApp(
         title: 'MV2629',
@@ -92,7 +94,7 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const Home(),
           '/splash': (context) => const SplashScreen(),
           '/listTask': (context) => const ListSportTaskScreen(),
-          // '/movie': (context) => const MovieScreen(),
+          '/movie': (context) => const MovieScreen(),
           '/tv': (context) => const Tvscreen(), // Placeholder for TV Screen
           '/statistical': (context) => const Statisticalscreen(),
           '/settings': (context) => Settingscreen(),

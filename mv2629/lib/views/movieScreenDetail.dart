@@ -1,35 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/tvShowDetail/tvShowDetailCubit.dart';
-import 'package:mv2629/bloc/tvShowDetail/tvShowDetailState.dart';
+import 'package:mv2629/bloc/movieDetail/movieDetailCubit.dart';
+import 'package:mv2629/bloc/movieDetail/movieDetailState.dart';
 import 'package:mv2629/constants/theme.dart';
 import 'package:mv2629/views/skeleton/tv_show_detail_skeleton.dart';
 import 'package:mv2629/widgets/media_detail_widgets.dart';
 
-class TvShowDetail extends StatelessWidget {
-  const TvShowDetail({super.key, required this.tvShowId});
+class MovieScreenDetail extends StatelessWidget {
+  const MovieScreenDetail({super.key, required this.movieId});
 
-  final int tvShowId;
+  final int movieId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TvShowDetailCubit()..getTvShowDetail(tvShowId),
-      child: _TvShowDetailView(tvShowId: tvShowId),
+      create: (context) => MovieDetailCubit()..getMovieDetail(movieId),
+      child: _MovieScreenDetailView(movieId: movieId),
     );
   }
 }
 
-class _TvShowDetailView extends StatefulWidget {
-  const _TvShowDetailView({required this.tvShowId});
+class _MovieScreenDetailView extends StatefulWidget {
+  const _MovieScreenDetailView({required this.movieId});
 
-  final int tvShowId;
+  final int movieId;
 
   @override
-  State<_TvShowDetailView> createState() => __TvShowDetailViewState();
+  State<_MovieScreenDetailView> createState() => __MovieScreenDetailViewState();
 }
 
-class __TvShowDetailViewState extends State<_TvShowDetailView> {
+class __MovieScreenDetailViewState extends State<_MovieScreenDetailView> {
   final ScrollController _similarScrollController = ScrollController();
 
   @override
@@ -47,22 +47,22 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
   void _onSimilarScroll() {
     if (_similarScrollController.position.pixels >=
         _similarScrollController.position.maxScrollExtent - 200) {
-      context.read<TvShowDetailCubit>().loadMoreSimilar(widget.tvShowId);
+      context.read<MovieDetailCubit>().loadMoreSimilar(widget.movieId);
     }
   }
 
   void _onRetry() {
-    context.read<TvShowDetailCubit>().getTvShowDetail(widget.tvShowId);
+    context.read<MovieDetailCubit>().getMovieDetail(widget.movieId);
   }
 
   void _onPlayTrailer() {
     // TODO: Implement video playback logic here.
   }
 
-  void _onTapSimilarShow(int showId) {
+  void _onTapSimilarMovie(int id) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => TvShowDetail(tvShowId: showId)),
+      MaterialPageRoute(builder: (_) => MovieScreenDetail(movieId: id)),
     );
   }
 
@@ -71,55 +71,55 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
     return Scaffold(
       backgroundColor: AppTheme.whiteColor,
       body: SafeArea(
-        child: BlocBuilder<TvShowDetailCubit, TvShowDetailState>(
+        child: BlocBuilder<MovieDetailCubit, MovieDetailState>(
           buildWhen: (previous, current) {
             if (previous.runtimeType != current.runtimeType) return true;
-            if (previous is TvShowDetailLoaded && current is TvShowDetailLoaded) {
-              return previous.tvDetail != current.tvDetail;
+            if (previous is MovieDetailLoaded && current is MovieDetailLoaded) {
+              return previous.movieDetail != current.movieDetail;
             }
             return true;
           },
           builder: (context, state) {
-            if (state is TvShowDetailLoading || state is TvShowDetailInitial) {
+            if (state is MovieDetailLoading || state is MovieDetailInitial) {
               return const TvShowDetailSkeleton();
             }
 
-            if (state is TvShowDetailError) {
+            if (state is MovieDetailError) {
               return _buildErrorState(context, state.message);
             }
 
-            if (state is TvShowDetailLoaded) {
-              return BlocBuilder<TvShowDetailCubit, TvShowDetailState>(
+            if (state is MovieDetailLoaded) {
+              return BlocBuilder<MovieDetailCubit, MovieDetailState>(
                 buildWhen: (previous, current) =>
-                    current is TvShowDetailLoaded &&
-                    (previous is! TvShowDetailLoaded ||
-                        previous.similarTvShows != current.similarTvShows ||
+                    current is MovieDetailLoaded &&
+                    (previous is! MovieDetailLoaded ||
+                        previous.similarMovies != current.similarMovies ||
                         previous.isLoadingMore != current.isLoadingMore),
                 builder: (context, innerState) {
-                  final loaded = innerState as TvShowDetailLoaded;
-                  final tv = loaded.tvDetail;
+                  final loaded = innerState as MovieDetailLoaded;
+                  final detail = loaded.movieDetail;
 
                   return MediaDetailContent(
                     model: MediaDetailViewModel(
-                      name: tv.name,
-                      dateText: tv.getFirstAirDate(),
-                      overview: tv.overview,
-                      posterPath: tv.posterPath,
-                      keyVideo: tv.keyVideo,
-                      episodeRuntime: tv.getEpisodeRuntime(),
-                      totalRuntime: tv.getTotalRuntime(),
-                      totalEpisodes: tv.numberOfEpisodes,
-                      originalLanguage: tv.originalLanguage,
-                      genres: tv.getGenres(),
+                      name: detail.name,
+                      dateText: detail.getFirstAirDate(),
+                      overview: detail.overview,
+                      posterPath: detail.posterPath,
+                      keyVideo: detail.keyVideo,
+                      episodeRuntime: detail.getEpisodeRuntime(),
+                      totalRuntime: detail.getTotalRuntime(),
+                      totalEpisodes: detail.durationFallback,
+                      originalLanguage: detail.originalLanguage,
+                      genres: detail.getGenres(),
                     ),
-                    similarItems: loaded.similarTvShows
+                    similarItems: loaded.similarMovies
                         .map((e) => MediaPosterItem(id: e.id, posterPath: e.posterPath))
                         .toList(),
                     isLoadingMore: loaded.isLoadingMore,
                     similarScrollController: _similarScrollController,
                     onBack: () => Navigator.of(context).pop(),
                     onPlayTrailer: _onPlayTrailer,
-                    onTapSimilar: _onTapSimilarShow,
+                    onTapSimilar: _onTapSimilarMovie,
                   );
                 },
               );

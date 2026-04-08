@@ -57,16 +57,17 @@ class MovieDetail extends Equatable {
   }
 
   factory MovieDetail.fromJson(Map<String, dynamic> json) {
+    final runtime = (json['runtime'] ?? 0) as int;
     return MovieDetail(
       id: json['id'],
-      name: json['name'] ?? '',
+      name: json['title'] ?? json['name'] ?? '',
       overview: json['overview'] ?? '',
       posterPath: json['poster_path'],
       releaseDate: json['release_date'],
 
-      runtimeList: List<int>.from(json['runtimeList'] ?? []),
+      runtimeList: runtime > 0 ? [runtime] : const [],
 
-      durationFallback: json['number_of_episodes'] ?? 0,
+      durationFallback: 1,
 
       originalLanguage: json['original_language'] ?? '',
 

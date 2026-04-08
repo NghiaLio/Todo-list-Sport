@@ -34,7 +34,7 @@ class MovieDetailService implements MovieDetailRepo {
   Future<MovieDetail?> getMovieDetail(int id) async {
     try {
       final res = await dio.get(
-        baseUrlMovieDetail.replaceAll('{series_id}', id.toString()),
+        baseUrlMovieDetail.replaceAll('{movie_id}', id.toString()),
       );
       return MovieDetail.fromJson(res.data);
     } catch (e) {
@@ -46,7 +46,7 @@ class MovieDetailService implements MovieDetailRepo {
   Future<List<Movie>?> getSimilarMovies(int id, int page) async {
     try {
       final res = await dio.get(
-        baseUrlMovieSimilar.replaceAll('{series_id}', id.toString()),
+        baseUrlMovieSimilar.replaceAll('{movie_id}', id.toString()),
         queryParameters: {'page': page},
       );
       return (res.data['results'] as List)
@@ -61,7 +61,7 @@ class MovieDetailService implements MovieDetailRepo {
   Future<String?> getMovieVideoTrailer(int id) async {
     try {
       final res = await dio.get(
-        baseUrlMovieVideoTrailer.replaceAll('{series_id}', id.toString()),
+        baseUrlMovieVideoTrailer.replaceAll('{movie_id}', id.toString()),
       );
       final results = res.data['results'] as List;
       if (results.isNotEmpty) {
