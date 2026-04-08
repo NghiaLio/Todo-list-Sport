@@ -1,50 +1,50 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/tvShowDetail/tvShowDetailState.dart';
-import 'package:mv2629/models/tvShow.dart';
-import 'package:mv2629/repo/implement/tvShowDetailImp.dart';
-import 'package:mv2629/repo/tvShowDetailRepo.dart';
+import 'package:mv2629/bloc/movieDetail/movieDetailState.dart';
+import 'package:mv2629/models/movie.dart';
+import 'package:mv2629/repo/implement/movieDetailImp.dart';
+import 'package:mv2629/repo/movieDetailRepo.dart';
 
-class TvShowDetailCubit extends Cubit<TvShowDetailState> {
-  final TvShowDetailRepo tvShowDetailService;
+class MovieDetailCubit extends Cubit<MovieDetailState> {
+  final MovieDetailRepo movieDetailService;
 
-  TvShowDetailCubit({TvShowDetailRepo? service})
-    : tvShowDetailService = service ?? TvShowDetailService(),
-      super(TvShowDetailInitial());
+  MovieDetailCubit({MovieDetailRepo? service})
+    : movieDetailService = service ?? MovieDetailService(),
+      super(MovieDetailInitial());
 
   // ── Internal state ──────────────────────────────────────────────────────────
   int _page = 1;
   bool _isLoading = false;
-  final Map<int, TvShow> _similarCache = {};
+  final Map<int, Movie> _similarCache = {};
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
-  List<TvShow> _getSimilarList() => _similarCache.values.toList();
+  List<Movie> _getSimilarList() => _similarCache.values.toList();
 
   // ── Public API ───────────────────────────────────────────────────────────────
 
-  Future<void> getTvShowDetail(int id) async {
-    emit(TvShowDetailLoading());
+  Future<void> getMovieDetail(int id) async {
+    emit(MovieDetailLoading());
     _page = 1;
     _similarCache.clear();
     _isLoading = true;
     try {
       // 1. Get Video Trailer first as requested
-      final videoTrailer = await tvShowDetailService.getTvShowVideoTrailer(id);
+      final videoTrailer = await movieDetailService.getMovieVideoTrailer(id);
 
       // 2. Get TV Detail
-      var tvDetail = await tvShowDetailService.getTvShowDetail(id);
-      if (tvDetail == null) {
-        emit(TvShowDetailError(message: 'Error'));
+      var movieDetail = await movieDetailService.getMovieDetail(id);
+      if (movieDetail == null) {
+        emit(MovieDetailError(message: 'Error'));
         return;
       }
 
       // Attach trailer key if found
       if (videoTrailer != null) {
-        tvDetail = tvDetail.copyWith(keyVideo: videoTrailer);
+        movieDetail = movieDetail.copyWith(keyVideo: videoTrailer);
       }
 
       // 3. Get First Page of Similar Shows
-      final similar = await tvShowDetailService.getSimilarTvShows(id, _page);
+      final similar = await movieDetailService.getSimilarMovies(id, _page);
       if (similar != null) {
         for (var s in similar) {
           _similarCache[s.id] = s;
@@ -53,14 +53,14 @@ class TvShowDetailCubit extends Cubit<TvShowDetailState> {
       }
 
       emit(
-        TvShowDetailLoaded(
-          tvDetail: tvDetail,
-          similarTvShows: _getSimilarList(),
+        MovieDetailLoaded(
+          movieDetail: movieDetail,
+          similarMovies: _getSimilarList(),
           hasReachedMax: similar?.isEmpty ?? true,
         ),
       );
     } catch (e) {
-      emit(TvShowDetailError(message: 'Error: $e'));
+      emit(MovieDetailError(message: 'Error: $e'));
     } finally {
       _isLoading = false;
     }
@@ -69,14 +69,14 @@ class TvShowDetailCubit extends Cubit<TvShowDetailState> {
   Future<void> loadMoreSimilar(int id) async {
     if (_isLoading) return;
     final currentState = state;
-    if (currentState is! TvShowDetailLoaded || currentState.hasReachedMax)
+    if (currentState is! MovieDetailLoaded || currentState.hasReachedMax)
       return;
 
     _isLoading = true;
     emit(currentState.copyWith(isLoadingMore: true));
 
     try {
-      final similar = await tvShowDetailService.getSimilarTvShows(id, _page);
+      final similar = await movieDetailService.getSimilarMovies(id, _page);
       if (similar == null) {
         emit(currentState.copyWith(isLoadingMore: false));
         return;
@@ -91,7 +91,7 @@ class TvShowDetailCubit extends Cubit<TvShowDetailState> {
 
       emit(
         currentState.copyWith(
-          similarTvShows: _getSimilarList(),
+          similarMovies: _getSimilarList(),
           isLoadingMore: false,
           hasReachedMax: hasReachedMax,
         ),

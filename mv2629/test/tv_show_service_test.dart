@@ -15,7 +15,6 @@ void main() {
     mockApiService = MockApiService();
     tvShowService = TvShowService(
       apiService: mockApiService,
-      discoveryUrl: 'test_discovery',
       searchUrl: 'test_search',
     );
   });
@@ -28,23 +27,27 @@ void main() {
       'genre_ids': [99, 10764],
       'poster_path': '/path.jpg',
       'vote_average': 8.5,
-      'first_air_date': '2024-01-01'
+      'first_air_date': '2024-01-01',
     };
 
     final mockResponseData = {
-      'results': [mockTvShowJson]
+      'results': [mockTvShowJson],
     };
 
     test('discoverTv returns a list of TvShow when successful', () async {
       // Arrange
-      when(() => mockApiService.get(
-            any(),
-            queryParameters: any(named: 'queryParameters'),
-          )).thenAnswer((_) async => Response(
-            data: mockResponseData,
-            statusCode: 200,
-            requestOptions: RequestOptions(path: ''),
-          ));
+      when(
+        () => mockApiService.get(
+          any(),
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          data: mockResponseData,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: ''),
+        ),
+      );
 
       // Act
       final result = await tvShowService.discoverTv(1);
@@ -54,19 +57,28 @@ void main() {
       expect(result!.length, 1);
       expect(result[0].id, 1);
       expect(result[0].name, 'Test Sport Show');
-      verify(() => mockApiService.get('test_discovery', queryParameters: {'with_genres': '99,10764', 'page': 1})).called(1);
+      verify(
+        () => mockApiService.get(
+          'test_search',
+          queryParameters: {'query': 'sport', 'page': 1},
+        ),
+      ).called(1);
     });
 
     test('searchTv returns a list of TvShow when successful', () async {
       // Arrange
-      when(() => mockApiService.get(
-            any(),
-            queryParameters: any(named: 'queryParameters'),
-          )).thenAnswer((_) async => Response(
-            data: mockResponseData,
-            statusCode: 200,
-            requestOptions: RequestOptions(path: ''),
-          ));
+      when(
+        () => mockApiService.get(
+          any(),
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          data: mockResponseData,
+          statusCode: 200,
+          requestOptions: RequestOptions(path: ''),
+        ),
+      );
 
       // Act
       final result = await tvShowService.searchTv('query', 1);
@@ -76,13 +88,22 @@ void main() {
       expect(result!.length, 1);
       expect(result[0].id, 1);
       expect(result[0].name, 'Test Sport Show');
-      verify(() => mockApiService.get('test_search', queryParameters: {'query': 'query', 'page': 1})).called(1);
+      verify(
+        () => mockApiService.get(
+          'test_search',
+          queryParameters: {'query': 'query', 'page': 1},
+        ),
+      ).called(1);
     });
 
     test('discoverTv returns null when an exception occurs', () async {
       // Arrange
-      when(() => mockApiService.get(any(), queryParameters: any(named: 'queryParameters')))
-          .thenThrow(Exception('API Error'));
+      when(
+        () => mockApiService.get(
+          any(),
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenThrow(Exception('API Error'));
 
       // Act
       final result = await tvShowService.discoverTv(1);

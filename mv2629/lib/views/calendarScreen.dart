@@ -142,7 +142,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-
 }
 
 class _CalendarWidget extends StatelessWidget {
@@ -198,17 +197,22 @@ class _CalendarWidget extends StatelessWidget {
                       Icons.chevron_right,
                       color: AppTheme.whiteColor,
                     ),
-                    controlsTextStyle: const TextStyle(
-                      color: AppTheme.whiteColor,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
-                    ),
-                    weekdayLabelTextStyle: const TextStyle(
-                      color: AppTheme.whiteColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
+                    controlsTextStyle: Theme.of(context)
+                        .textTheme
+                        .headlineMedium
+                        ?.copyWith(
+                          color: AppTheme.whiteColor,
+                          fontSize: 17,
+                          letterSpacing: 0.5,
+                        ),
+                    weekdayLabelTextStyle: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(
+                          color: AppTheme.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                     dayBuilder:
                         ({
                           required date,
@@ -279,10 +283,13 @@ class _CalendarWidget extends StatelessWidget {
                                     alignment: Alignment.center,
                                     child: Text(
                                       '${date.day}',
-                                      style: TextStyle(
-                                        color: numberColor,
-                                        fontSize: dayCircleSize * 0.39,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: numberColor,
+                                            fontSize: dayCircleSize * 0.39,
+                                          ),
                                     ),
                                   ),
                                 ],

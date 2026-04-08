@@ -1,72 +1,72 @@
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 
-class TvDetail extends Equatable {
+class MovieDetail extends Equatable {
   final int id;
   final String name;
   final String overview;
 
   final String? posterPath;
-  final String? firstAirDate;
+  final String? releaseDate;
 
-  final List<int> episodeRunTime; // phút / episode
-  final int numberOfEpisodes;
+  final List<int> runtimeList; // phút / episode
+  final int durationFallback;
 
   final String originalLanguage;
   final List<String> genres;
 
   final String? keyVideo;
 
-  const TvDetail({
+  const MovieDetail({
     required this.id,
     required this.name,
     required this.overview,
     this.posterPath,
-    this.firstAirDate,
-    required this.episodeRunTime,
-    required this.numberOfEpisodes,
+    this.releaseDate,
+    required this.runtimeList,
+    required this.durationFallback,
     required this.originalLanguage,
     required this.genres,
     this.keyVideo,
   });
 
-  TvDetail copyWith({
+  MovieDetail copyWith({
     int? id,
     String? name,
     String? overview,
     String? posterPath,
-    String? firstAirDate,
-    List<int>? episodeRunTime,
-    int? numberOfEpisodes,
+    String? releaseDate,
+    List<int>? runtimeList,
+    int? durationFallback,
     String? originalLanguage,
     List<String>? genres,
     String? keyVideo,
   }) {
-    return TvDetail(
+    return MovieDetail(
       id: id ?? this.id,
       name: name ?? this.name,
       overview: overview ?? this.overview,
       posterPath: posterPath ?? this.posterPath,
-      firstAirDate: firstAirDate ?? this.firstAirDate,
-      episodeRunTime: episodeRunTime ?? this.episodeRunTime,
-      numberOfEpisodes: numberOfEpisodes ?? this.numberOfEpisodes,
+      releaseDate: releaseDate ?? this.releaseDate,
+      runtimeList: runtimeList ?? this.runtimeList,
+      durationFallback: durationFallback ?? this.durationFallback,
       originalLanguage: originalLanguage ?? this.originalLanguage,
       genres: genres ?? this.genres,
       keyVideo: keyVideo ?? this.keyVideo,
     );
   }
 
-  factory TvDetail.fromJson(Map<String, dynamic> json) {
-    return TvDetail(
+  factory MovieDetail.fromJson(Map<String, dynamic> json) {
+    return MovieDetail(
       id: json['id'],
       name: json['name'] ?? '',
       overview: json['overview'] ?? '',
       posterPath: json['poster_path'],
-      firstAirDate: json['first_air_date'],
+      releaseDate: json['release_date'],
 
-      episodeRunTime: List<int>.from(json['episode_run_time'] ?? []),
+      runtimeList: List<int>.from(json['runtimeList'] ?? []),
 
-      numberOfEpisodes: json['number_of_episodes'] ?? 0,
+      durationFallback: json['number_of_episodes'] ?? 0,
 
       originalLanguage: json['original_language'] ?? '',
 
@@ -82,22 +82,22 @@ class TvDetail extends Equatable {
     name,
     overview,
     posterPath,
-    firstAirDate,
-    episodeRunTime,
-    numberOfEpisodes,
+    releaseDate,
+    runtimeList,
+    durationFallback,
     originalLanguage,
     genres,
     keyVideo,
   ];
 
   int getEpisodeRuntime() {
-    if (episodeRunTime.isEmpty) return 0;
-    return episodeRunTime.first;
+    if (runtimeList.isEmpty) return 0;
+    return runtimeList.first;
   }
 
   int getTotalRuntime() {
     final runtime = getEpisodeRuntime();
-    return runtime * numberOfEpisodes;
+    return runtime * durationFallback;
   }
 
   String getGenres() {
@@ -106,7 +106,7 @@ class TvDetail extends Equatable {
 
   // format first air date to dd/mm/yyyy
   String getFirstAirDate() {
-    if (firstAirDate == null || firstAirDate!.isEmpty) return '';
-    return DateFormat('dd/MM/yyyy').format(DateTime.parse(firstAirDate!));
+    if (releaseDate == null || releaseDate!.isEmpty) return '';
+    return DateFormat('dd/MM/yyyy').format(DateTime.parse(releaseDate!));
   }
 }

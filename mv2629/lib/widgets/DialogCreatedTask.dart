@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:mv2629/constants/theme.dart';
 
 class MatchDialog extends StatefulWidget {
@@ -172,7 +173,12 @@ class _MatchDialogState extends State<MatchDialog> {
 
   Widget _buildSaveButton() {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.3,
+      width: getValueForScreenType<double>(
+        context: context,
+        mobile: MediaQuery.of(context).size.width * 0.3,
+        tablet: MediaQuery.of(context).size.width * 0.2,
+        desktop: MediaQuery.of(context).size.width * 0.15,
+      ),
       child: ElevatedButton(
         onPressed: _onSave,
         style: ElevatedButton.styleFrom(
@@ -201,7 +207,12 @@ class _MatchDialogState extends State<MatchDialog> {
     List<TextInputFormatter>? inputFormatters,
   }) {
     return Container(
-      width: 80, // Tăng width một chút cho vừa TextField
+      width: getValueForScreenType<double>(
+        context: context,
+        mobile: 90,
+        tablet: 120,
+        desktop: 130,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
         color: AppTheme.primaryColor,
@@ -210,17 +221,15 @@ class _MatchDialogState extends State<MatchDialog> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                label,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
+          Center(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
               ),
-            ],
+              textAlign: TextAlign.center,
+            ),
           ),
           const SizedBox(height: 2),
           SizedBox(

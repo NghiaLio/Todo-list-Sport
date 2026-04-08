@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:mv2629/constants/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -17,8 +18,30 @@ class TvShowDetailSkeleton extends StatelessWidget {
           children: [
             Center(
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.65,
-                height: MediaQuery.of(context).size.height * 0.4,
+                width: getValueForScreenType<double>(
+                  context: context,
+                  mobile:
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                      ? MediaQuery.of(context).size.width * 0.65
+                      : MediaQuery.of(context).size.width * 0.45,
+                  tablet:
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                      ? MediaQuery.of(context).size.width * 0.55
+                      : MediaQuery.of(context).size.width * 0.45,
+                  desktop: MediaQuery.of(context).size.width * 0.35,
+                ),
+                height: getValueForScreenType<double>(
+                  context: context,
+                  mobile:
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                      ? MediaQuery.of(context).size.height * 0.4
+                      : MediaQuery.of(context).size.height * 0.5,
+                  tablet:
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                      ? MediaQuery.of(context).size.height * 0.35
+                      : MediaQuery.of(context).size.height * 0.5,
+                  desktop: MediaQuery.of(context).size.height * 0.6,
+                ),
                 decoration: BoxDecoration(
                   color: AppTheme.whiteColor,
                   borderRadius: BorderRadius.circular(16),
@@ -50,7 +73,18 @@ class TvShowDetailSkeleton extends StatelessWidget {
             const SizedBox(height: 14),
             Center(
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.65,
+                width: getValueForScreenType<double>(
+                  context: context,
+                  mobile:
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                      ? MediaQuery.of(context).size.width * 0.65
+                      : MediaQuery.of(context).size.width * 0.45,
+                  tablet:
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                      ? MediaQuery.of(context).size.width * 0.55
+                      : MediaQuery.of(context).size.width * 0.45,
+                  desktop: MediaQuery.of(context).size.width * 0.35,
+                ),
                 height: 48,
                 decoration: BoxDecoration(
                   color: AppTheme.whiteColor,
@@ -66,11 +100,35 @@ class TvShowDetailSkeleton extends StatelessWidget {
             const _TitleBlockWidget(),
             const SizedBox(height: 16),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.25,
+              height: getValueForScreenType<double>(
+                context: context,
+                mobile:
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                    ? MediaQuery.of(context).size.height * 0.25
+                    : MediaQuery.of(context).size.height * 0.35,
+                tablet:
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                    ? MediaQuery.of(context).size.height * 0.2
+                    : MediaQuery.of(context).size.height * 0.35,
+                desktop: MediaQuery.of(context).size.height * 0.45,
+              ),
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (_, __) => Container(
-                  width: MediaQuery.of(context).size.width * 0.33,
+                  width: getValueForScreenType<double>(
+                    context: context,
+                    mobile:
+                        MediaQuery.of(context).orientation ==
+                            Orientation.portrait
+                        ? MediaQuery.of(context).size.width * 0.33
+                        : MediaQuery.of(context).size.width * 0.2,
+                    tablet:
+                        MediaQuery.of(context).orientation ==
+                            Orientation.portrait
+                        ? MediaQuery.of(context).size.width * 0.25
+                        : MediaQuery.of(context).size.width * 0.2,
+                    desktop: MediaQuery.of(context).size.width * 0.15,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.whiteColor,
                     borderRadius: BorderRadius.circular(12),
@@ -86,7 +144,6 @@ class TvShowDetailSkeleton extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _TitleBlockWidget extends StatelessWidget {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:mv2629/constants/theme.dart';
 import 'package:mv2629/widgets/custom_header.dart';
 
@@ -15,7 +16,12 @@ class Settingscreen extends StatelessWidget {
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.5,
+            maxWidth: getValueForScreenType<double>(
+              context: context,
+              mobile: MediaQuery.of(context).size.width * 0.8,
+              tablet: MediaQuery.of(context).size.width * 0.5,
+              desktop: MediaQuery.of(context).size.width * 0.3,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -37,24 +43,25 @@ class Settingscreen extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _SettingsOptionWidget extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
 
-  const _SettingsOptionWidget({
-    required this.title,
-    required this.onTap,
-  });
+  const _SettingsOptionWidget({required this.title, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.08,
+        height: getValueForScreenType<double>(
+          context: context,
+          mobile: 56,
+          tablet: 64,
+          desktop: 64,
+        ),
         width: double.infinity,
         alignment: Alignment.center,
         decoration: const BoxDecoration(

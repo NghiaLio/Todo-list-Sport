@@ -46,6 +46,8 @@ dependencies:
   dio: ^5.9.2
   cached_network_image: ^3.4.1
   equatable: ^2.0.8
+  readmore: ^3.0.0
+  responsive_builder: ^0.7.1
 
 dev_dependencies:
   flutter_test:

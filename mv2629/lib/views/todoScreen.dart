@@ -40,7 +40,6 @@ class _TodoScreenState extends State<TodoScreen> {
       ),
     );
   }
-
 }
 
 class _TaskListWidget extends StatelessWidget {
@@ -111,9 +110,8 @@ class _TaskListWidget extends StatelessWidget {
                   onConfirm: () => context
                       .read<TaskTodoCubit>()
                       .toggleTaskCompletion(item.task!),
-                  onReject: () => context.read<TaskTodoCubit>().deleteTask(
-                    item.task!.id,
-                  ),
+                  onReject: () =>
+                      context.read<TaskTodoCubit>().deleteTask(item.task!.id),
                 ),
               );
             },

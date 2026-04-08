@@ -26,4 +26,4 @@ class SportsError extends SportsState {
 
   @override
   List<Object?> get props => [message];
-}
+}

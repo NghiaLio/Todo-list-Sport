@@ -39,7 +39,12 @@ class TvShowDetailLoaded extends TvShowDetailState {
   }
 
   @override
-  List<Object?> get props => [tvDetail, similarTvShows, isLoadingMore, hasReachedMax];
+  List<Object?> get props => [
+    tvDetail,
+    similarTvShows,
+    isLoadingMore,
+    hasReachedMax,
+  ];
 }
 
 class TvShowDetailError extends TvShowDetailState {

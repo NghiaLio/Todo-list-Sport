@@ -1,22 +1,22 @@
 import 'package:equatable/equatable.dart';
 
-class TvShow extends Equatable {
+class Movie extends Equatable {
   final int id;
   final String name;
   final String overview;
   final List<int> genreIds;
   final String? posterPath;
   final double voteAverage;
-  final String? firstAirDate;
+  final String? releaseDate;
 
-  const TvShow({
+  const Movie({
     required this.id,
     required this.name,
     required this.overview,
     required this.genreIds,
     this.posterPath,
     required this.voteAverage,
-    this.firstAirDate,
+    this.releaseDate,
   });
 
   @override
@@ -27,38 +27,38 @@ class TvShow extends Equatable {
     genreIds,
     posterPath,
     voteAverage,
-    firstAirDate,
+    releaseDate,
   ];
 
-  TvShow copyWith({
+  Movie copyWith({
     int? id,
     String? name,
     String? overview,
     List<int>? genreIds,
     String? posterPath,
     double? voteAverage,
-    String? firstAirDate,
+    String? releaseDate,
   }) {
-    return TvShow(
+    return Movie(
       id: id ?? this.id,
       name: name ?? this.name,
       overview: overview ?? this.overview,
       genreIds: genreIds ?? this.genreIds,
       posterPath: posterPath ?? this.posterPath,
       voteAverage: voteAverage ?? this.voteAverage,
-      firstAirDate: firstAirDate ?? this.firstAirDate,
+      releaseDate: releaseDate ?? this.releaseDate,
     );
   }
 
-  factory TvShow.fromJson(Map<String, dynamic> json) {
-    return TvShow(
+  factory Movie.fromJson(Map<String, dynamic> json) {
+    return Movie(
       id: json['id'],
       name: json['name'] ?? '',
       overview: json['overview'] ?? '',
       genreIds: List<int>.from(json['genre_ids'] ?? []),
       posterPath: json['poster_path'],
       voteAverage: (json['vote_average'] ?? 0).toDouble(),
-      firstAirDate: json['first_air_date'],
+      releaseDate: json['release_date'],
     );
   }
 }

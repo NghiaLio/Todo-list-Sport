@@ -1,37 +1,37 @@
-// d:\Lasbom-Dev\Project-dev\mv2629\lib\bloc\tvShows\tvShowCubit.dart
+// d:\Lasbom-Dev\Project-dev\mv2629\lib\bloc\movies\movieCubit.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/tvShows/tvShowState.dart';
-import 'package:mv2629/models/filterTvShow.dart';
-import 'package:mv2629/models/tvShow.dart';
-import 'package:mv2629/repo/implement/tvShowImp.dart';
+import 'package:mv2629/bloc/movies/movieState.dart';
+import 'package:mv2629/models/filterMovie.dart';
+import 'package:mv2629/models/movie.dart';
+import 'package:mv2629/repo/implement/movieImp.dart';
 
-class TvShowCubit extends Cubit<TvShowState> {
-  final TvShowService tvShowService;
+class MovieCubit extends Cubit<MovieState> {
+  final MovieService movieService;
 
-  TvShowCubit({TvShowService? service})
-    : tvShowService = service ?? TvShowService(),
-      super(TvShowInitial());
+  MovieCubit({MovieService? service})
+    : movieService = service ?? MovieService(),
+      super(MovieInitial());
 
   // ── Internal state ──────────────────────────────────────────────────────────
   /// Raw results from API, keyed by id to avoid duplicates.
-  final Map<int, TvShow> _cache = {};
+  final Map<int, Movie> _cache = {};
   int _page = 1;
   String _keyword = '';
   bool _isLoading = false;
-  FilterTvShow _filter = const FilterTvShow();
+  FilterMovie _filter = const FilterMovie();
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
   /// Apply all local filters on the full cache and return display list.
-  List<TvShow> _applyAll() =>
-      tvShowService.applyFilter(_cache.values.toList(), _filter);
+  List<Movie> _applyAll() =>
+      movieService.applyFilter(_cache.values.toList(), _filter);
 
-  TvShowLoaded _buildLoaded({
+  MovieLoaded _buildLoaded({
     bool isLoadingMore = false,
     bool hasReachedMax = false,
-  }) => TvShowLoaded(
-    tvShows: _applyAll(),
+  }) => MovieLoaded(
+    movies: _applyAll(),
     activeFilter: _filter,
     isLoadingMore: isLoadingMore,
     hasReachedMax: hasReachedMax,
@@ -41,7 +41,7 @@ class TvShowCubit extends Cubit<TvShowState> {
 
   /// Called once on screen init.
   Future<void> init() async {
-    if (state is TvShowInitial) {
+    if (state is MovieInitial) {
       await _fetchPage(isFirstPage: true);
     }
   }
@@ -50,7 +50,7 @@ class TvShowCubit extends Cubit<TvShowState> {
   /// No-op when already loading or has reached the last page.
   Future<void> loadMore() async {
     if (_isLoading) return;
-    if (state is TvShowLoaded && (state as TvShowLoaded).hasReachedMax) return;
+    if (state is MovieLoaded && (state as MovieLoaded).hasReachedMax) return;
 
     await _fetchPage(isFirstPage: false);
   }
@@ -62,7 +62,7 @@ class TvShowCubit extends Cubit<TvShowState> {
     _keyword = value;
     _page = 1;
     _cache.clear();
-    emit(TvShowLoading());
+    emit(MovieLoading());
     await _fetchPage(isFirstPage: true);
   }
 
@@ -71,12 +71,12 @@ class TvShowCubit extends Cubit<TvShowState> {
     _keyword = '';
     _page = 1;
     _cache.clear();
-    emit(TvShowLoading());
+    emit(MovieLoading());
     await _fetchPage(isFirstPage: true);
   }
 
   /// Filter only – never triggers an API call; re-applies on existing cache.
-  void updateFilter(FilterTvShow newFilter) {
+  void updateFilter(FilterMovie newFilter) {
     if (_filter == newFilter) return;
     _filter = newFilter;
     if (_cache.isEmpty) return;
@@ -85,7 +85,7 @@ class TvShowCubit extends Cubit<TvShowState> {
 
   /// Reset all filters and re-display cached data.
   void clearFilter() {
-    _filter = const FilterTvShow();
+    _filter = const FilterMovie();
     if (_cache.isEmpty) return;
     emit(_buildLoaded());
   }
@@ -96,20 +96,20 @@ class TvShowCubit extends Cubit<TvShowState> {
     _isLoading = true;
 
     // If data already exists, show "loading more" spinner inline.
-    if (!isFirstPage && state is TvShowLoaded) {
+    if (!isFirstPage && state is MovieLoaded) {
       emit(_buildLoaded(isLoadingMore: true));
     }
 
     try {
       final results = _keyword.isEmpty
-          ? await tvShowService.discoverTv(_page)
-          : await tvShowService.searchTv(_keyword, _page);
+          ? await movieService.discoverMovie(_page)
+          : await movieService.searchMovie(_keyword, _page);
 
       if (results == null) {
         // API error
         if (isFirstPage) {
-          emit(TvShowError(message: 'Không tìm thấy dữ liệu'));
-        } else if (state is TvShowLoaded) {
+          emit(MovieError(message: 'Không tìm thấy dữ liệu'));
+        } else if (state is MovieLoaded) {
           emit(_buildLoaded(isLoadingMore: false));
         }
         return;
@@ -124,7 +124,7 @@ class TvShowCubit extends Cubit<TvShowState> {
 
       emit(_buildLoaded(hasReachedMax: hasReachedMax));
     } catch (e) {
-      emit(TvShowError(message: 'Lỗi kết nối hệ thống: $e'));
+      emit(MovieError(message: 'Lỗi kết nối hệ thống: $e'));
     } finally {
       _isLoading = false;
     }

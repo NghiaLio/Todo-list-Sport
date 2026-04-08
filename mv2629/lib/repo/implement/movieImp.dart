@@ -1,25 +1,25 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mv2629/models/filterTvShow.dart';
+import 'package:mv2629/models/filterMovie.dart';
 import 'package:mv2629/models/taskSportCard.dart';
-import 'package:mv2629/models/tvShow.dart';
+import 'package:mv2629/models/movie.dart';
 import 'package:mv2629/repo/dioClient.dart';
-import 'package:mv2629/repo/tvShowRepo.dart';
+import 'package:mv2629/repo/movieRepo.dart';
 
-class TvShowService implements TvShowRepo {
+class MovieService implements MovieRepo {
   final ApiService dio;
   final String searchUrl;
 
-  TvShowService({ApiService? apiService, String? searchUrl})
+  MovieService({ApiService? apiService, String? searchUrl})
     : dio = apiService ?? ApiService(),
-      searchUrl = searchUrl ?? dotenv.env['BASE_URL_SEARCH_TV'] ?? "";
+      searchUrl = searchUrl ?? dotenv.env['BASE_URL_SEARCH_MOVIE'] ?? "";
 
   @override
-  Future<List<TvShow>?> discoverTv(int page) async {
-    return searchTv('sport', page);
+  Future<List<Movie>?> discoverMovie(int page) async {
+    return searchMovie('sport', page);
   }
 
   @override
-  Future<List<TvShow>?> searchTv(String query, int page) async {
+  Future<List<Movie>?> searchMovie(String query, int page) async {
     try {
       final res = await dio.get(
         searchUrl,
@@ -27,7 +27,7 @@ class TvShowService implements TvShowRepo {
       );
 
       return (res.data['results'] as List)
-          .map((e) => TvShow.fromJson(e))
+          .map((e) => Movie.fromJson(e))
           .toList();
     } catch (e) {
       return null;
@@ -35,7 +35,7 @@ class TvShowService implements TvShowRepo {
   }
 
   @override
-  double sportScore(TvShow tv) {
+  double sportScore(Movie tv) {
     double score = 0;
     final text = (tv.name + tv.overview).toLowerCase();
 
@@ -50,10 +50,10 @@ class TvShowService implements TvShowRepo {
     return score;
   }
 
-  bool isSport(TvShow tv) => sportScore(tv) >= 3;
+  bool isSport(Movie tv) => sportScore(tv) >= 3;
 
   @override
-  List<TvShow> applyFilter(List<TvShow> list, FilterTvShow f) {
+  List<Movie> applyFilter(List<Movie> list, FilterMovie f) {
     return list.where((tv) {
       // ── Rating ──
       if (f.minRating != null && tv.voteAverage < f.minRating!) return false;
@@ -61,7 +61,7 @@ class TvShowService implements TvShowRepo {
 
       // ── Year ── (null-safe: skip items without a valid date)
       if (f.fromYear != null || f.toYear != null) {
-        final rawDate = tv.firstAirDate;
+        final rawDate = tv.releaseDate;
         if (rawDate == null || rawDate.length < 4) {
           // Can't determine year → exclude when year filter is active
           return false;
@@ -89,7 +89,7 @@ class TvShowService implements TvShowRepo {
   }
 
   @override
-  bool matchSportType(TvShow tv, SportType type) {
+  bool matchSportType(Movie tv, SportType type) {
     final text = '${tv.name} ${tv.overview}'.toLowerCase();
 
     switch (type) {

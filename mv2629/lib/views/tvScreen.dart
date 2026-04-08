@@ -1,9 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:mv2629/bloc/tvShows/tvShowCubit.dart';
 import 'package:mv2629/bloc/tvShows/tvShowState.dart';
 import 'package:mv2629/models/filterTvShow.dart';
@@ -11,7 +12,9 @@ import 'package:mv2629/models/taskSportCard.dart';
 import 'package:mv2629/models/tvShow.dart';
 import 'package:mv2629/constants/theme.dart';
 import 'package:mv2629/views/tvShowDetail.dart';
+import 'package:mv2629/views/skeleton/image_skeleton.dart';
 import 'package:mv2629/views/skeleton/tv_show_card_skeleton.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:mv2629/widgets/custom_header.dart';
 import 'package:mv2629/widgets/showSnackBar.dart';
 import 'package:mv2629/utils/image_helper.dart';
@@ -175,7 +178,6 @@ class _TvscreenState extends State<Tvscreen> {
       ),
     );
   }
-
 }
 
 class _GridWidget extends StatelessWidget {
@@ -203,9 +205,19 @@ class _GridWidget extends StatelessWidget {
               if (showSkeleton) return const TvShowCardSkeleton();
               return _TvShowCard(show: shows[index]);
             }, childCount: showSkeleton ? 9 : shows.length),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 0.55,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: getValueForScreenType<int>(
+                context: context,
+                mobile: MediaQuery.of(context).orientation == Orientation.portrait ? 3 : 5,
+                tablet: MediaQuery.of(context).orientation == Orientation.portrait ? 4 : 5,
+                desktop: 6,
+              ),
+              childAspectRatio: getValueForScreenType<double>(
+                context: context,
+                mobile: MediaQuery.of(context).orientation == Orientation.portrait ? 0.55 : 0.65,
+                tablet: MediaQuery.of(context).orientation == Orientation.portrait ? 0.60 : 0.7,
+                desktop: 0.7,
+              ),
               crossAxisSpacing: 12,
               mainAxisSpacing: 16,
             ),
@@ -251,7 +263,7 @@ class _TvShowCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => TvShowDetail()),
+        MaterialPageRoute(builder: (_) => TvShowDetail(tvShowId: show.id)),
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -259,7 +271,6 @@ class _TvShowCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              // ignore: deprecated_member_use
               color: AppTheme.black10Color,
               blurRadius: 4,
               offset: const Offset(0, 2),
@@ -278,12 +289,8 @@ class _TvShowCard extends StatelessWidget {
                       ? CachedNetworkImage(
                           imageUrl: imageUrl,
                           fit: BoxFit.cover,
-                          placeholder: (_, __) => Shimmer.fromColors(
-                            baseColor: AppTheme.grey300Color,
-                            highlightColor: AppTheme.grey100Color,
-                            child: Container(color: AppTheme.whiteColor),
-                          ),
-                          errorWidget: (_, __, ___) =>
+                          placeholder: (_, _) => const ImageSkeleton(),
+                          errorWidget: (_, _, _) =>
                               const Icon(Icons.broken_image),
                         )
                       : const Icon(Icons.tv),
@@ -301,7 +308,7 @@ class _TvShowCard extends StatelessWidget {
                   children: [
                     Text(
                       show.name,
-                      style: const TextStyle(
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppTheme.whiteColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
@@ -320,7 +327,7 @@ class _TvShowCard extends StatelessWidget {
                         const SizedBox(width: 2),
                         Text(
                           show.voteAverage.toStringAsFixed(1),
-                          style: const TextStyle(
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: AppTheme.whiteColor,
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
@@ -338,7 +345,7 @@ class _TvShowCard extends StatelessWidget {
                                   show.firstAirDate!.length >= 4)
                               ? show.firstAirDate!.substring(0, 4)
                               : 'N/A',
-                          style: const TextStyle(
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: AppTheme.whiteColor,
                             fontSize: 10,
                           ),
@@ -390,9 +397,11 @@ class _SearchAndFilterBar extends StatelessWidget {
               child: TextField(
                 controller: controller,
                 onChanged: onChanged,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Search TV shows...',
-                  hintStyle: TextStyle(color: AppTheme.greyColor, fontSize: 14),
+                  hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.greyColor,
+                  ),
                   prefixIcon: Icon(Icons.search, color: AppTheme.greyColor),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 14),
@@ -496,7 +505,7 @@ class _ActiveFilterChips extends StatelessWidget {
               child: Chip(
                 label: Text(
                   label,
-                  style: const TextStyle(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontSize: 11,
                     color: AppTheme.whiteColor,
                   ),
@@ -509,9 +518,12 @@ class _ActiveFilterChips extends StatelessWidget {
             ),
           ),
           ActionChip(
-            label: const Text(
+            label: Text(
               'Clear all',
-              style: TextStyle(fontSize: 11, color: Colors.redAccent),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 11,
+                color: Colors.redAccent,
+              ),
             ),
             avatar: const Icon(Icons.close, size: 14, color: Colors.redAccent),
             backgroundColor: Colors.red.withOpacity(0.08),
@@ -652,20 +664,20 @@ class _FilterSheetState extends State<_FilterSheet> {
               // Header
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Filters',
-                    style: TextStyle(
-                      fontSize: 18,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.blackColor,
                     ),
                   ),
                   const Spacer(),
                   TextButton(
                     onPressed: _clearAll,
-                    child: const Text(
+                    child: Text(
                       'Clear all',
-                      style: TextStyle(color: Colors.redAccent),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.redAccent,
+                      ),
                     ),
                   ),
                 ],
@@ -724,7 +736,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                 controller: _keywordCtrl,
                 decoration: InputDecoration(
                   hintText: 'e.g. marathon, cricket...',
-                  hintStyle: const TextStyle(
+                  hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppTheme.greyColor,
                     fontSize: 13,
                   ),
@@ -761,7 +773,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                     selected: selected,
                     selectedColor: AppTheme.primaryColor,
                     backgroundColor: AppTheme.grey100Color,
-                    labelStyle: TextStyle(
+                    labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: selected
                           ? AppTheme.whiteColor
                           : AppTheme.grey700Color,
@@ -790,9 +802,9 @@ class _FilterSheetState extends State<_FilterSheet> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
+                  child: Text(
                     'Apply Filters',
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: AppTheme.whiteColor,
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -853,10 +865,8 @@ class _SectionTitle extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            color: AppTheme.blackColor,
           ),
         ),
         if (value.isNotEmpty) ...[
@@ -869,7 +879,7 @@ class _SectionTitle extends StatelessWidget {
             ),
             child: Text(
               value,
-              style: const TextStyle(
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: 12,
                 color: AppTheme.primaryColor,
                 fontWeight: FontWeight.w600,
@@ -893,14 +903,20 @@ class _EmptyView extends StatelessWidget {
         children: [
           Icon(Icons.tv_off_rounded, size: 64, color: AppTheme.grey300Color),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'No results found',
-            style: TextStyle(color: AppTheme.greyColor, fontSize: 15),
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: AppTheme.greyColor,
+              fontSize: 15,
+            ),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'Try adjusting your filters or search keyword',
-            style: TextStyle(color: AppTheme.grey400Color, fontSize: 12),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppTheme.grey400Color,
+              fontSize: 12,
+            ),
           ),
         ],
       ),
@@ -928,7 +944,9 @@ class _ErrorView extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppTheme.greyColor, fontSize: 14),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppTheme.greyColor,
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(

@@ -17,30 +17,28 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.primaryColor,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Phần trên: Illustrations
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: const _IllustrationWidget(),
-            ),
+      body: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 80),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const _IllustrationWidget(),
+              const SizedBox(height: 48),
+              const _TextContentWidget(),
+              const SizedBox(height: 40),
+              ButtonArrow(
+                onPressed: () => _navigateToHome(context),
+                iconAsset: 'assets/rightArrow.png',
+                size: 69,
+              ),
+            ],
           ),
-          // Phần giữa: Text content
-          const _TextContentWidget(),
-          SizedBox(height: 60),
-          ButtonArrow(
-            onPressed: () => _navigateToHome(context),
-            iconAsset: 'assets/rightArrow.png',
-            size: 69,
-          ),
-          SizedBox(height: 40),
-        ],
+        ),
       ),
     );
   }
-
 }
 
 class _IllustrationWidget extends StatelessWidget {

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mv2629/bloc/sports/sportsCubit.dart';
 import 'package:mv2629/bloc/sports/sportsState.dart';
@@ -145,8 +146,13 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
             children: [
               // Sports Icons Horizontal List - Fixed
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                height: 80,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                height: getValueForScreenType<double>(
+                  context: context,
+                  mobile: 95,
+                  tablet: 110,
+                  desktop: 120,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: sports.map((sport) {
@@ -230,7 +236,9 @@ class _TasksListWidget extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        final mockTasks = context.read<SportsCubit>().state is SportsLoaded ? (context.read<SportsCubit>().state as SportsLoaded).tasks : <TaskSportCardModel>[];
+        final mockTasks = context.read<SportsCubit>().state is SportsLoaded
+            ? (context.read<SportsCubit>().state as SportsLoaded).tasks
+            : <TaskSportCardModel>[];
         if (state is SportsLoading && mockTasks.isEmpty) {
           return ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -468,7 +476,12 @@ class _SportsCardFilterItemWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 78,
+        width: getValueForScreenType<double>(
+          context: context,
+          mobile: MediaQuery.of(context).size.width * 0.19,
+          tablet: MediaQuery.of(context).size.width * 0.13,
+          desktop: MediaQuery.of(context).size.width * 0.1,
+        ),
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.primaryColor : AppTheme.whiteColor,
           borderRadius: const BorderRadius.only(

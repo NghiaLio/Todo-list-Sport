@@ -4,29 +4,32 @@ import 'package:mv2629/models/tvShowDetailModel.dart';
 import 'package:mv2629/repo/dioClient.dart';
 import 'package:mv2629/repo/tvShowDetailRepo.dart';
 
-class TVShowDetailService implements TvShowDetail {
-
+class TvShowDetailService implements TvShowDetailRepo {
   final ApiService dio;
   final String baseUrlImage;
   final String baseUrlTvShowDetail;
   final String baseUrlTvShowSimilar;
   final String baseUrlTvShowVideoTrailer;
 
-  TVShowDetailService({
+  TvShowDetailService({
     ApiService? apiService,
     String? baseUrlImage,
     String? baseUrlTvShowDetail,
     String? baseUrlTvShowSimilar,
     String? baseUrlTvShowVideoTrailer,
-  })  : dio = apiService ?? ApiService(),
-        baseUrlImage = baseUrlImage ?? dotenv.env['BASE_URL_IMAGE'] ?? "",
-        baseUrlTvShowDetail = baseUrlTvShowDetail ?? dotenv.env['BASE_URL_GET_TV_DETAIL'] ?? "",
-        baseUrlTvShowSimilar = baseUrlTvShowSimilar ?? dotenv.env['BASE_URL_GET_TV_SIMILAR'] ?? "",
-        baseUrlTvShowVideoTrailer = baseUrlTvShowVideoTrailer ?? dotenv.env['BASE_URL_GET_VIDEO_TRAILER'] ?? "";
-       
+  }) : dio = apiService ?? ApiService(),
+       baseUrlImage = baseUrlImage ?? dotenv.env['BASE_URL_IMAGE'] ?? "",
+       baseUrlTvShowDetail =
+           baseUrlTvShowDetail ?? dotenv.env['BASE_URL_GET_TV_DETAIL'] ?? "",
+       baseUrlTvShowSimilar =
+           baseUrlTvShowSimilar ?? dotenv.env['BASE_URL_GET_TV_SIMILAR'] ?? "",
+       baseUrlTvShowVideoTrailer =
+           baseUrlTvShowVideoTrailer ??
+           dotenv.env['BASE_URL_GET_VIDEO_TRAILER'] ??
+           "";
 
   @override
-  Future<TvDetail?> getTvShowDetail(int id)async {
+  Future<TvDetail?> getTvShowDetail(int id) async {
     try {
       final res = await dio.get(
         baseUrlTvShowDetail.replaceAll('{series_id}', id.toString()),
@@ -53,12 +56,16 @@ class TVShowDetailService implements TvShowDetail {
   }
 
   @override
-  Future<String?> getTvShowVideoTrailer(int id)async {
+  Future<String?> getTvShowVideoTrailer(int id) async {
     try {
       final res = await dio.get(
         baseUrlTvShowVideoTrailer.replaceAll('{series_id}', id.toString()),
       );
-      return res.data['results'][0]['key'];
+      final results = res.data['results'] as List;
+      if (results.isNotEmpty) {
+        return results[0]['key'];
+      }
+      return null;
     } catch (e) {
       return null;
     }

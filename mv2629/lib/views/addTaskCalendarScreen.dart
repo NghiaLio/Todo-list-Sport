@@ -194,7 +194,6 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
       ),
     );
   }
-
 }
 
 class _TaskNameTabWidget extends StatelessWidget {
@@ -214,11 +213,9 @@ class _TaskNameTabWidget extends StatelessWidget {
           TextField(
             controller: taskNameController,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.greyColor,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.displaySmall?.copyWith(color: AppTheme.greyColor),
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -239,9 +236,11 @@ class _TaskNameTabWidget extends StatelessWidget {
               controller: contentController,
               maxLines: null,
               style: Theme.of(context).textTheme.bodyMedium,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Start writing here.....',
-                hintStyle: TextStyle(color: AppTheme.black54Color),
+                hintStyle: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: AppTheme.black54Color),
                 border: InputBorder.none,
               ),
             ),
@@ -289,7 +288,7 @@ class _TimeTabWidget extends StatelessWidget {
               controller: hourController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
                 fontSize: 48,
                 color: AppTheme.primaryColor,
               ),
@@ -299,11 +298,13 @@ class _TimeTabWidget extends StatelessWidget {
               },
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
               ':',
-              style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.displayLarge?.copyWith(fontSize: 48),
             ),
           ),
           // Minute
@@ -319,7 +320,7 @@ class _TimeTabWidget extends StatelessWidget {
               controller: minuteController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
                 fontSize: 48,
                 color: AppTheme.black87Color,
               ),
@@ -357,7 +358,7 @@ class _TimeTabWidget extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         'AM',
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: period == 'AM'
                               ? AppTheme.primaryColor
                               : AppTheme.greyColor,
@@ -385,7 +386,7 @@ class _TimeTabWidget extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         'PM',
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: period == 'PM'
                               ? AppTheme.primaryColor
                               : AppTheme.greyColor,
@@ -408,10 +409,7 @@ class _TabBarWidget extends StatelessWidget {
   final TabController tabController;
   final List<IconData> tabIcons;
 
-  const _TabBarWidget({
-    required this.tabController,
-    required this.tabIcons,
-  });
+  const _TabBarWidget({required this.tabController, required this.tabIcons});
 
   @override
   Widget build(BuildContext context) {

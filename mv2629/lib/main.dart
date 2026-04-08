@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -12,7 +13,7 @@ import 'package:mv2629/views/addTaskCalendarScreen.dart';
 import 'package:mv2629/views/calendarScreen.dart';
 import 'package:mv2629/views/home.dart';
 import 'package:mv2629/views/listSportTaskScreen.dart';
-import 'package:mv2629/views/movieScreen.dart';
+// import 'package:mv2629/views/movieScreen.dart';
 import 'package:mv2629/views/settingScreen.dart';
 import 'package:mv2629/views/splashScreen.dart';
 import 'package:mv2629/views/statisticalScreen.dart';
@@ -50,15 +51,40 @@ class MyApp extends StatelessWidget {
         BlocProvider<TaskTodoCubit>(
           create: (_) => TaskTodoCubit()..loadInitial(),
         ),
-        BlocProvider<SportsCubit>(
-          create: (_) => SportsCubit()..loadAllTasks(),
-        ),
-        BlocProvider<TvShowCubit>(
-          create: (_) => TvShowCubit(),
-        ),
+        BlocProvider<SportsCubit>(create: (_) => SportsCubit()..loadAllTasks()),
+        BlocProvider<TvShowCubit>(create: (_) => TvShowCubit()),
       ],
       child: MaterialApp(
         title: 'MV2629',
+        builder: (context, child) {
+          final textScale = getValueForScreenType<double>(
+            context: context,
+            mobile: 1.0,
+            tablet: 1.25,
+            desktop: 1.4,
+          );
+
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(
+                MediaQuery.of(context).textScaler.scale(textScale),
+              ),
+            ),
+            child: Theme(
+              data: AppTheme.lightTheme.copyWith(
+                iconTheme: AppTheme.lightTheme.iconTheme.copyWith(
+                  size: getValueForScreenType<double>(
+                    context: context,
+                    mobile: 24.0,
+                    tablet: 30.0,
+                    desktop: 34.0,
+                  ),
+                ),
+              ),
+              child: child!,
+            ),
+          );
+        },
         theme: AppTheme.lightTheme,
         themeMode: ThemeMode.light,
         home: const SplashScreen(),
@@ -66,7 +92,7 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const Home(),
           '/splash': (context) => const SplashScreen(),
           '/listTask': (context) => const ListSportTaskScreen(),
-          '/movie': (context) => const MovieScreen(),
+          // '/movie': (context) => const MovieScreen(),
           '/tv': (context) => const Tvscreen(), // Placeholder for TV Screen
           '/statistical': (context) => const Statisticalscreen(),
           '/settings': (context) => Settingscreen(),

@@ -1,38 +1,38 @@
 import 'package:equatable/equatable.dart';
-import 'package:mv2629/models/filterTvShow.dart';
-import 'package:mv2629/models/tvShow.dart';
+import 'package:mv2629/models/filterMovie.dart';
+import 'package:mv2629/models/movie.dart';
 
-abstract class TvShowState extends Equatable {
+abstract class MovieState extends Equatable {
   @override
   List<Object?> get props => [];
 }
 
-class TvShowInitial extends TvShowState {}
+class MovieInitial extends MovieState {}
 
-class TvShowLoading extends TvShowState {}
+class MovieLoading extends MovieState {}
 
 /// Data is available; optionally still fetching more pages.
-class TvShowLoaded extends TvShowState {
-  final List<TvShow> tvShows;
-  final FilterTvShow activeFilter;
+class MovieLoaded extends MovieState {
+  final List<Movie> movies;
+  final FilterMovie activeFilter;
   final bool isLoadingMore;
   final bool hasReachedMax;
 
-  TvShowLoaded({
-    required this.tvShows,
+  MovieLoaded({
+    required this.movies,
     required this.activeFilter,
     this.isLoadingMore = false,
     this.hasReachedMax = false,
   });
 
-  TvShowLoaded copyWith({
-    List<TvShow>? tvShows,
-    FilterTvShow? activeFilter,
+  MovieLoaded copyWith({
+    List<Movie>? movies,
+    FilterMovie? activeFilter,
     bool? isLoadingMore,
     bool? hasReachedMax,
   }) {
-    return TvShowLoaded(
-      tvShows: tvShows ?? this.tvShows,
+    return MovieLoaded(
+      movies: movies ?? this.movies,
       activeFilter: activeFilter ?? this.activeFilter,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
@@ -41,16 +41,16 @@ class TvShowLoaded extends TvShowState {
 
   @override
   List<Object?> get props => [
-    tvShows,
+    movies,
     activeFilter,
     isLoadingMore,
     hasReachedMax,
   ];
 }
 
-class TvShowError extends TvShowState {
+class MovieError extends MovieState {
   final String message;
-  TvShowError({required this.message});
+  MovieError({required this.message});
 
   @override
   List<Object?> get props => [message];

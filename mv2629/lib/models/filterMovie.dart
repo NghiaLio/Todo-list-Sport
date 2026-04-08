@@ -3,7 +3,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:mv2629/models/taskSportCard.dart';
 
-class FilterTvShow extends Equatable {
+class FilterMovie extends Equatable {
   final double? minRating;
   final double? maxRating;
   final int? fromYear;
@@ -11,7 +11,7 @@ class FilterTvShow extends Equatable {
   final SportType? sportType;
   final String? sportKeyword;
 
-  const FilterTvShow({
+  const FilterMovie({
     this.minRating,
     this.maxRating,
     this.fromYear,
@@ -38,7 +38,7 @@ class FilterTvShow extends Equatable {
       sportType == null &&
       (sportKeyword == null || sportKeyword!.trim().isEmpty);
 
-  FilterTvShow copyWith({
+  FilterMovie copyWith({
     double? minRating,
     double? maxRating,
     int? fromYear,
@@ -52,7 +52,7 @@ class FilterTvShow extends Equatable {
     bool clearSportType = false,
     bool clearSportKeyword = false,
   }) {
-    return FilterTvShow(
+    return FilterMovie(
       minRating: clearMinRating ? null : (minRating ?? this.minRating),
       maxRating: clearMaxRating ? null : (maxRating ?? this.maxRating),
       fromYear: clearFromYear ? null : (fromYear ?? this.fromYear),

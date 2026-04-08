@@ -5,17 +5,19 @@ import 'package:hive/hive.dart';
 part 'taskSportCard.g.dart';
 
 @HiveType(typeId: 0)
-enum SportType { 
+enum SportType {
   @HiveField(0)
-  football, 
+  football,
   @HiveField(1)
-  basketball, 
+  basketball,
   @HiveField(2)
-  volleyball, 
+  volleyball,
   @HiveField(3)
-  golf, 
+  golf,
   @HiveField(4)
-  rugby }
+  rugby,
+}
+
 final List<SportType> sportsList = SportType.values;
 
 @HiveType(typeId: 1)

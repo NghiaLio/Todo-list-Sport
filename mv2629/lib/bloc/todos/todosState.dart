@@ -57,24 +57,26 @@ class TodoTaskLoaded extends TodoTaskState {
       totalCount: totalCount ?? this.totalCount,
       hasNextPage: hasNextPage ?? this.hasNextPage,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-      selectedDate: clearSelectedDate ? null : (selectedDate ?? this.selectedDate),
+      selectedDate: clearSelectedDate
+          ? null
+          : (selectedDate ?? this.selectedDate),
       newestFirst: newestFirst ?? this.newestFirst,
     );
   }
 
   @override
   List<Object?> get props => [
-        tasks,
-        taskDateKeys,
-        completionRate,
-        page,
-        pageSize,
-        totalCount,
-        hasNextPage,
-        isLoadingMore,
-        selectedDate,
-        newestFirst,
-      ];
+    tasks,
+    taskDateKeys,
+    completionRate,
+    page,
+    pageSize,
+    totalCount,
+    hasNextPage,
+    isLoadingMore,
+    selectedDate,
+    newestFirst,
+  ];
 }
 
 class TodoTaskError extends TodoTaskState {

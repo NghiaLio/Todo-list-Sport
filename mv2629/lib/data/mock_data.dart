@@ -183,4 +183,3 @@ final List<TaskSportCardModel> mockTasks = [
     location: 'Thong Nhat Stadium',
   ),
 ];
-
