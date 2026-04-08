@@ -37,4 +37,10 @@ class TimeConvert {
     final minuteStr = minute.toString().padLeft(2, '0');
     return '${hourStr}h ${minuteStr}m';
   }
+
+  static String formatMinutes(int minutes) {
+    final h = minutes ~/ 60;
+    final m = minutes % 60;
+    return '${h}h ${m}m';
+  }
 }
