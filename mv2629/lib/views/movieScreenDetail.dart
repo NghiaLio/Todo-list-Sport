@@ -56,7 +56,7 @@ class __MovieScreenDetailViewState extends State<_MovieScreenDetailView> {
   }
 
   void _onPlayTrailer() {
-    // TODO: Implement video playback logic here.
+    
   }
 
   void _onTapSimilarMovie(int id) {

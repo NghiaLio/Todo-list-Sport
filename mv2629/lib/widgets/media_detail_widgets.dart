@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:mv2629/constants/theme.dart';
 import 'package:mv2629/utils/image_helper.dart';
 import 'package:mv2629/views/skeleton/image_skeleton.dart';
@@ -89,25 +87,6 @@ class MediaDetailContent extends StatelessWidget {
     );
   }
 
-  Future<void> _openTrailer(BuildContext context) async {
-    if (model.keyVideo == null) return;
-    try {
-      final baseUrl = dotenv.env['BASE_URL_YOUTUBE'] ?? 'https://www.youtube.com/watch?v=';
-      final url = Uri.parse('$baseUrl${model.keyVideo}');
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
-      } else {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not launch trailer')));
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
-    }
-  }
-
   Widget _buildPosterWithPlay(BuildContext context) {
     return Center(
       child: ClipRRect(
@@ -159,19 +138,16 @@ class MediaDetailContent extends StatelessWidget {
               Positioned(
                 bottom: 16,
                 left: 16,
-                child: GestureDetector(
-                  onTap: () => _openTrailer(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: Colors.black26,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.play_arrow,
-                      color: AppTheme.whiteColor,
-                      size: 32,
-                    ),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                    color: Colors.black26,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.play_arrow,
+                    color: AppTheme.whiteColor,
+                    size: 32,
                   ),
                 ),
               ),
@@ -215,7 +191,7 @@ class MediaDetailContent extends StatelessWidget {
   Widget _buildTrailerButton(BuildContext context) {
     return Center(
       child: ElevatedButton(
-        onPressed: () => _openTrailer(context),
+        onPressed: onPlayTrailer,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           minimumSize: Size(
@@ -272,10 +248,15 @@ class MediaDetailContent extends StatelessWidget {
           title: 'LANGUAGES',
           content: model.originalLanguage.toUpperCase(),
         ),
-        _InfoRowWidget(title: 'GENRES', content: model.genres),
+        _InfoRowWidget(
+          title: 'GENRES',
+          content: model.genres.isEmpty ? 'N/A' : model.genres,
+        ),
         _InfoRowWidget(
           title: 'OVERVIEW',
-          content: model.overview,
+          content: model.overview.isEmpty
+              ? 'No overview available.'
+              : model.overview,
           isReadMore: true,
         ),
       ],

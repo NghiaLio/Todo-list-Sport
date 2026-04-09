@@ -68,10 +68,10 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
     );
   }
 
-  void createTask(BuildContext blocContext) async {
+  void createTask(BuildContext context) async {
     final result = await showDialog<Map<String, String>>(
-      context: blocContext,
-      builder: (context) => const MatchDialog(),
+      context: context,
+      builder: (dialogContext) => const MatchDialog(),
     );
 
     if (!mounted || result == null) {
@@ -79,7 +79,12 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
     }
 
     final isError = result['status'] == 'error';
-    final message = result['message'] ?? 'Tao task thanh cong';
+    final message = result['message'] ?? 'Task created successfully';
+    if (isError) {
+      ShowSnackBar.show(context, message: message, type: SnackBarType.error);
+      return;
+    }
+
     final time = result['time'] ?? '';
     final scored = result['scored'] ?? '';
     final location = result['location'] ?? '';
@@ -92,28 +97,57 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
       isCompleted: false,
       dateTime: DateTime.now(),
     );
-    if (isError) {
-      ShowSnackBar.show(
-        blocContext,
-        message: message,
-        type: SnackBarType.error,
-      );
-      return;
-    }
 
-    await blocContext.read<SportsCubit>().addTask(newTask);
+    await context.read<SportsCubit>().addTask(newTask);
     if (!mounted) {
       return;
     }
-    if (blocContext.read<SportsCubit>().state is SportsError) {
+    if (context.read<SportsCubit>().state is SportsError) {
       return;
     }
 
-    ShowSnackBar.show(
-      blocContext,
-      message: message,
-      type: SnackBarType.success,
+    ShowSnackBar.show(context, message: message, type: SnackBarType.success);
+  }
+
+  void editTask(BuildContext context, TaskSportCardModel task) async {
+    final result = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (dialogContext) => MatchDialog(task: task),
     );
+
+    if (!mounted || result == null) {
+      return;
+    }
+
+    final isError = result['status'] == 'error';
+    final message = result['message'] ?? 'Task updated successfully';
+    if (isError) {
+      ShowSnackBar.show(context, message: message, type: SnackBarType.error);
+      return;
+    }
+
+    final action = result['action'];
+    if (action == 'update') {
+      final time = result['time'] ?? '';
+      final scored = result['scored'] ?? '';
+      final location = result['location'] ?? '';
+
+      final updatedTask = task.copyWith(
+        time: time,
+        scored: scored,
+        location: location,
+      );
+
+      await context.read<SportsCubit>().updateTask(updatedTask);
+      if (!mounted) {
+        return;
+      }
+      if (context.read<SportsCubit>().state is SportsError) {
+        return;
+      }
+    }
+
+    ShowSnackBar.show(context, message: message, type: SnackBarType.success);
   }
 
   void updateTask(BuildContext blocContext, TaskSportCardModel task) async {
@@ -136,58 +170,54 @@ class _ListSportTaskScreenState extends State<ListSportTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SportsCubit()..loadAllTasks(),
-      child: Builder(
-        builder: (blocContext) => Scaffold(
-          backgroundColor: AppTheme.backgroundColor,
-          appBar: const _AppBarWidget(),
-          body: Column(
-            children: [
-              // Sports Icons Horizontal List - Fixed
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                height: getValueForScreenType<double>(
-                  context: context,
-                  mobile: 95,
-                  tablet: 110,
-                  desktop: 120,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: sports.map((sport) {
-                    String sportNameLower = sport.name.toLowerCase();
-                    String iconPath = 'assets/$sportNameLower.png';
-                    bool isSelected = selectedSport == sport;
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: const _AppBarWidget(),
+      body: Column(
+        children: [
+          // Sports Icons Horizontal List - Fixed
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            height: getValueForScreenType<double>(
+              context: context,
+              mobile: 95,
+              tablet: 110,
+              desktop: 120,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: sports.map((sport) {
+                String sportNameLower = sport.name.toLowerCase();
+                String iconPath = 'assets/$sportNameLower.png';
+                bool isSelected = selectedSport == sport;
 
-                    return _SportsCardFilterItemWidget(
-                      name: _getSportDisplayName(sport),
-                      icon: iconPath,
-                      isSelected: isSelected,
-                      onTap: () {
-                        selectSport(sport);
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
-              // Scrollable Events List
-              Expanded(
-                child: _TasksListWidget(
-                  selectedSport: selectedSport,
-                  rejectedStatus: rejectedStatus,
-                  onUpdateTask: updateTask,
-                  onDeleteTask: _deleteTask,
-                ),
-              ),
-            ],
+                return _SportsCardFilterItemWidget(
+                  name: _getSportDisplayName(sport),
+                  icon: iconPath,
+                  isSelected: isSelected,
+                  onTap: () {
+                    selectSport(sport);
+                  },
+                );
+              }).toList(),
+            ),
           ),
-          floatingActionButton: CustomFloatingActionButton(
-            onPressed: () => createTask(blocContext),
+          // Scrollable Events List
+          Expanded(
+            child: _TasksListWidget(
+              selectedSport: selectedSport,
+              rejectedStatus: rejectedStatus,
+              onUpdateTask: updateTask,
+              onDeleteTask: _deleteTask,
+              onEditTask: editTask,
+            ),
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        ),
+        ],
       ),
+      floatingActionButton: CustomFloatingActionButton(
+        onPressed: () => createTask(context),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -212,12 +242,14 @@ class _TasksListWidget extends StatelessWidget {
   final Map<int, bool> rejectedStatus;
   final void Function(BuildContext, TaskSportCardModel) onUpdateTask;
   final void Function(BuildContext, String) onDeleteTask;
+  final void Function(BuildContext, TaskSportCardModel) onEditTask;
 
   const _TasksListWidget({
     required this.selectedSport,
     required this.rejectedStatus,
     required this.onUpdateTask,
     required this.onDeleteTask,
+    required this.onEditTask,
   });
 
   @override
@@ -330,6 +362,7 @@ class _TasksListWidget extends StatelessWidget {
                 rejectedStatus: rejectedStatus,
                 onUpdateTask: onUpdateTask,
                 onDeleteTask: onDeleteTask,
+                onEditTask: onEditTask,
               );
             }
           },
@@ -345,6 +378,7 @@ class _TaskItemWidget extends StatelessWidget {
   final Map<int, bool> rejectedStatus;
   final void Function(BuildContext, TaskSportCardModel) onUpdateTask;
   final void Function(BuildContext, String) onDeleteTask;
+  final void Function(BuildContext, TaskSportCardModel) onEditTask;
 
   const _TaskItemWidget({
     required this.task,
@@ -352,78 +386,82 @@ class _TaskItemWidget extends StatelessWidget {
     required this.rejectedStatus,
     required this.onUpdateTask,
     required this.onDeleteTask,
+    required this.onEditTask,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.whiteColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.cardBorderColor, width: 1),
-      ),
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Text section - takes 2/3 of space
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Time
-                Text(
-                  'Time: ${TimeConvert.convertStringTimeToStringTime(task.time)}',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                // Location
-                Text(
-                  'Location: ${task.location}',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                // Scored
-                Text(
-                  'Scored: ${task.scored}',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-              ],
+    return GestureDetector(
+      onTap: () => onEditTask(context, task),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.whiteColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.cardBorderColor, width: 1),
+        ),
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Text section - takes 2/3 of space
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Time
+                  Text(
+                    'Time: ${TimeConvert.convertStringTimeToStringTime(task.time)}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Location
+                  Text(
+                    'Location: ${task.location}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Scored
+                  Text(
+                    'Scored: ${task.scored}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          // Action Buttons - takes 1/3 of space
-          Expanded(
-            flex: 1,
-            child: TaskActionButtons(
-              isCompleted: task.isCompleted,
-              isRejected: rejectedStatus[index] ?? false,
-              onConfirm: () {
-                onUpdateTask(context, task);
-              },
-              onReject: () {
-                // Show confirmation dialog before setting reject status
-                showDialog(
-                  context: context,
-                  builder: (BuildContext dialogContext) {
-                    return ConfirmRejectDialog(
-                      onConfirm: () {
-                        onDeleteTask(context, task.id);
-                      },
-                    );
-                  },
-                );
-              },
+            // Action Buttons - takes 1/3 of space
+            Expanded(
+              flex: 1,
+              child: TaskActionButtons(
+                isCompleted: task.isCompleted,
+                isRejected: rejectedStatus[index] ?? false,
+                onConfirm: () {
+                  onUpdateTask(context, task);
+                },
+                onReject: () {
+                  // Show confirmation dialog before setting reject status
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext dialogContext) {
+                      return ConfirmRejectDialog(
+                        onConfirm: () {
+                          onDeleteTask(context, task.id);
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

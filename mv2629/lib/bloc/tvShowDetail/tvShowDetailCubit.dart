@@ -69,8 +69,9 @@ class TvShowDetailCubit extends Cubit<TvShowDetailState> {
   Future<void> loadMoreSimilar(int id) async {
     if (_isLoading) return;
     final currentState = state;
-    if (currentState is! TvShowDetailLoaded || currentState.hasReachedMax)
+    if (currentState is! TvShowDetailLoaded || currentState.hasReachedMax) {
       return;
+    }
 
     _isLoading = true;
     emit(currentState.copyWith(isLoadingMore: true));

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mv2629/models/taskTodoModel.dart';
+import 'package:mv2629/notifications/notificationService.dart';
 import 'package:mv2629/repo/implement/taskTodoImp.dart';
 import 'package:mv2629/repo/taskTodoRepo.dart';
 import 'package:mv2629/bloc/todos/todosState.dart';
@@ -82,6 +83,7 @@ class TaskTodoCubit extends Cubit<TodoTaskState> {
   Future<void> addTask(TaskTodoModel task, {bool reload = true}) async {
     try {
       await _repo.addTask(task);
+      _scheduleNotification(task);
       if (reload) {
         await _loadPage(reset: true);
       }
@@ -93,6 +95,7 @@ class TaskTodoCubit extends Cubit<TodoTaskState> {
   Future<void> updateTask(TaskTodoModel task, {bool reload = true}) async {
     try {
       await _repo.updateTask(task);
+      _scheduleNotification(task);
       if (reload) {
         await _loadPage(reset: true);
       }
@@ -109,12 +112,28 @@ class TaskTodoCubit extends Cubit<TodoTaskState> {
   Future<void> deleteTask(String id, {bool reload = true}) async {
     try {
       await _repo.deleteTask(id);
+      await LocalNotificationService().cancelNotification(id.hashCode);
       if (reload) {
         await _loadPage(reset: true);
       }
     } catch (e) {
       emit(TodoTaskError(message: 'Failed to delete task: $e'));
     }
+  }
+
+  void _scheduleNotification(TaskTodoModel task) {
+    if (task.dateTime == null || task.isCompleted) {
+      LocalNotificationService().cancelNotification(task.id.hashCode);
+      return;
+    }
+
+    LocalNotificationService().scheduleTodoReminder(
+      id: task.id.hashCode,
+      title: 'Task Reminder!',
+      body: 'Task "${task.taskName}" will be due in 15 minutes.',
+      taskTime: task.dateTime!,
+      payload: '{"id": "${task.id}"}',
+    );
   }
 
   Future<void> _loadPage({required bool reset}) async {

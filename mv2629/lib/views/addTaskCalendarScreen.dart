@@ -11,8 +11,9 @@ import 'package:mv2629/widgets/showSnackBar.dart';
 
 class AddTaskCalendar extends StatefulWidget {
   final DateTime selectedDate;
+  final TaskTodoModel? task;
 
-  AddTaskCalendar({super.key, DateTime? selectedDate})
+  AddTaskCalendar({super.key, DateTime? selectedDate, this.task})
     : selectedDate = selectedDate ?? DateTime.now();
 
   @override
@@ -63,20 +64,36 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
       minute,
     );
 
-    final todo = TaskTodoModel(
-      id: IdGenerator.generateID(),
-      taskName: taskName,
-      content: content,
-      time: _formatDisplayTime(hour, minute, _period),
-      isCompleted: false,
-      dateTime: taskDateTime,
-    );
+    final displayTime = _formatDisplayTime(hour, minute, _period);
 
-    await context.read<TaskTodoCubit>().addTask(todo);
+    // Check if editing or creating
+    if (widget.task != null) {
+      // Edit mode - update existing task
+      final updatedTodo = widget.task!.copyWith(
+        taskName: taskName,
+        content: content,
+        time: displayTime,
+        dateTime: taskDateTime,
+      );
+      await context.read<TaskTodoCubit>().updateTask(updatedTodo);
+      _showMessage('Task updated successfully', type: SnackBarType.success);
+    } else {
+      // Create mode - add new task
+      final todo = TaskTodoModel(
+        id: IdGenerator.generateID(),
+        taskName: taskName,
+        content: content,
+        time: displayTime,
+        isCompleted: false,
+        dateTime: taskDateTime,
+      );
+      await context.read<TaskTodoCubit>().addTask(todo);
+      _showMessage('Task created successfully', type: SnackBarType.success);
+    }
+
     if (!mounted) {
       return;
     }
-    _showMessage('Task created successfully', type: SnackBarType.success);
     Navigator.pop(context);
   }
 
@@ -105,11 +122,6 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
     super.initState();
     _selectedDate = widget.selectedDate;
 
-    final hour24 = _selectedDate.hour;
-    final minute = _selectedDate.minute;
-    final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
-
-    _period = hour24 >= 12 ? 'PM' : 'AM';
     _tabController = TabController(length: tabIcons.length, vsync: this);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging || !_tabController.indexIsChanging) {
@@ -117,12 +129,35 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
       }
     });
 
-    _taskNameController = TextEditingController(text: 'Name Task');
-    _hourController = TextEditingController(text: hour12.toString());
-    _minuteController = TextEditingController(
-      text: minute.toString().padLeft(2, '0'),
-    );
-    _contentController = TextEditingController();
+    if (widget.task != null) {
+      // Edit mode - populate with existing task data
+      _taskNameController = TextEditingController(text: widget.task!.taskName);
+      _contentController = TextEditingController(text: widget.task!.content);
+
+      final taskDateTime = widget.task!.dateTime;
+      final hour24 = taskDateTime?.hour ?? 0;
+      final minute = taskDateTime?.minute ?? 0;
+      final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
+
+      _period = hour24 >= 12 ? 'PM' : 'AM';
+      _hourController = TextEditingController(text: hour12.toString());
+      _minuteController = TextEditingController(
+        text: minute.toString().padLeft(2, '0'),
+      );
+    } else {
+      // Create mode - use default values
+      final hour24 = _selectedDate.hour;
+      final minute = _selectedDate.minute;
+      final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
+
+      _period = hour24 >= 12 ? 'PM' : 'AM';
+      _taskNameController = TextEditingController(text: 'Name Task');
+      _hourController = TextEditingController(text: hour12.toString());
+      _minuteController = TextEditingController(
+        text: minute.toString().padLeft(2, '0'),
+      );
+      _contentController = TextEditingController();
+    }
   }
 
   @override

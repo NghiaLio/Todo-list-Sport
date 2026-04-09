@@ -81,6 +81,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
     await _todoCubit.refresh();
   }
 
+  Future<void> _navigateToEditTask(TaskTodoModel task) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            AddTaskCalendar(selectedDate: task.dateTime, task: task),
+      ),
+    );
+
+    if (!mounted) {
+      return;
+    }
+    await _todoCubit.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,6 +143,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       isLoadingTasks: _isLoadingTasks,
                       dayTasks: _dayTasks,
                       onRefresh: _fetchTasksForSelectedDate,
+                      onEditTask: _navigateToEditTask,
                     ),
                   ],
                 ),
@@ -314,11 +330,13 @@ class _TaskListWidget extends StatelessWidget {
   final bool isLoadingTasks;
   final List<TaskTodoModel>? dayTasks;
   final VoidCallback onRefresh;
+  final void Function(TaskTodoModel) onEditTask;
 
   const _TaskListWidget({
     required this.isLoadingTasks,
     this.dayTasks,
     required this.onRefresh,
+    required this.onEditTask,
   });
 
   @override
@@ -359,15 +377,18 @@ class _TaskListWidget extends StatelessWidget {
       itemCount: dayTasks!.length,
       itemBuilder: (context, index) {
         final task = dayTasks![index];
-        return TaskContentCard(
-          taskName: task.taskName,
-          content: task.content,
-          time: task.time,
-          isCompleted: task.isCompleted,
-          isRejected: false,
-          onConfirm: () =>
-              context.read<TaskTodoCubit>().toggleTaskCompletion(task),
-          onReject: () => context.read<TaskTodoCubit>().deleteTask(task.id),
+        return GestureDetector(
+          onTap: () => onEditTask(task),
+          child: TaskContentCard(
+            taskName: task.taskName,
+            content: task.content,
+            time: task.time,
+            isCompleted: task.isCompleted,
+            isRejected: false,
+            onConfirm: () =>
+                context.read<TaskTodoCubit>().toggleTaskCompletion(task),
+            onReject: () => context.read<TaskTodoCubit>().deleteTask(task.id),
+          ),
         );
       },
     );

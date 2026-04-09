@@ -108,7 +108,7 @@ class MovieCubit extends Cubit<MovieState> {
       if (results == null) {
         // API error
         if (isFirstPage) {
-          emit(MovieError(message: 'Không tìm thấy dữ liệu'));
+          emit(MovieError(message: 'No data found'));
         } else if (state is MovieLoaded) {
           emit(_buildLoaded(isLoadingMore: false));
         }
@@ -124,7 +124,7 @@ class MovieCubit extends Cubit<MovieState> {
 
       emit(_buildLoaded(hasReachedMax: hasReachedMax));
     } catch (e) {
-      emit(MovieError(message: 'Lỗi kết nối hệ thống: $e'));
+      emit(MovieError(message: 'System connection error: $e'));
     } finally {
       _isLoading = false;
     }

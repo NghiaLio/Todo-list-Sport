@@ -65,13 +65,10 @@ class MediaSearchAndFilterBar extends StatelessWidget {
                 onChanged: onChanged,
                 decoration: InputDecoration(
                   hintText: hintText,
-                  hintStyle: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: AppTheme.greyColor),
-                  prefixIcon: const Icon(
-                    Icons.search,
+                  hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppTheme.greyColor,
                   ),
+                  prefixIcon: const Icon(Icons.search, color: AppTheme.greyColor),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 ),
@@ -327,9 +324,9 @@ class _MediaFilterSheetState extends State<MediaFilterSheet> {
                     onPressed: _clearAll,
                     child: Text(
                       'Clear all',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.redAccent,
+                      ),
                     ),
                   ),
                 ],
@@ -356,8 +353,7 @@ class _MediaFilterSheetState extends State<MediaFilterSheet> {
               const SizedBox(height: 8),
               _SectionTitle(
                 label: 'Release Year',
-                value:
-                    '${_yearRange.start.toInt()} – ${_yearRange.end.toInt()}',
+                value: '${_yearRange.start.toInt()} – ${_yearRange.end.toInt()}',
               ),
               RangeSlider(
                 min: _minYearBound,
@@ -413,14 +409,13 @@ class _MediaFilterSheetState extends State<MediaFilterSheet> {
                     selected: selected,
                     selectedColor: AppTheme.primaryColor,
                     backgroundColor: AppTheme.grey100Color,
-                    labelStyle: Theme.of(context).textTheme.bodyMedium
-                        ?.copyWith(
-                          color: selected
-                              ? AppTheme.whiteColor
-                              : AppTheme.grey700Color,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: selected
+                          ? AppTheme.whiteColor
+                          : AppTheme.grey700Color,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                     onSelected: (_) => setState(() {
                       _selectedSport = selected ? null : type;
                     }),
@@ -605,18 +600,14 @@ class MediaErrorView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.wifi_off_rounded,
-            size: 64,
-            color: AppTheme.grey400Color,
-          ),
+          const Icon(Icons.wifi_off_rounded, size: 64, color: AppTheme.grey400Color),
           const SizedBox(height: 12),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.greyColor),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppTheme.greyColor,
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
@@ -642,9 +633,9 @@ class _SectionTitle extends StatelessWidget {
       children: [
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         if (value.isNotEmpty) ...[
           const Spacer(),

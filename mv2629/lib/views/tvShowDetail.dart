@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mv2629/bloc/tvShowDetail/tvShowDetailCubit.dart';
 import 'package:mv2629/bloc/tvShowDetail/tvShowDetailState.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:mv2629/constants/theme.dart';
 import 'package:mv2629/views/skeleton/tv_show_detail_skeleton.dart';
 import 'package:mv2629/widgets/media_detail_widgets.dart';
@@ -55,8 +57,16 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
     context.read<TvShowDetailCubit>().getTvShowDetail(widget.tvShowId);
   }
 
-  void _onPlayTrailer() {
-    // TODO: Implement video playback logic here.
+  Future<void> _onPlayTrailer(String key) async {
+    final youtubeUrl = dotenv.env['BASE_URL_YOUTUBE'] ?? 'https://www.youtube.com/watch?v=';
+    final url = Uri.parse('$youtubeUrl$key');
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not launch trailer')),
+        );
+      }
+    }
   }
 
   void _onTapSimilarShow(int showId) {
@@ -118,7 +128,11 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
                     isLoadingMore: loaded.isLoadingMore,
                     similarScrollController: _similarScrollController,
                     onBack: () => Navigator.of(context).pop(),
-                    onPlayTrailer: _onPlayTrailer,
+                    onPlayTrailer: () {
+                      if (tv.keyVideo != null) {
+                        _onPlayTrailer(tv.keyVideo!);
+                      }
+                    },
                     onTapSimilar: _onTapSimilarShow,
                   );
                 },

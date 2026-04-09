@@ -108,7 +108,7 @@ class TvShowCubit extends Cubit<TvShowState> {
       if (results == null) {
         // API error
         if (isFirstPage) {
-          emit(TvShowError(message: 'Không tìm thấy dữ liệu'));
+          emit(TvShowError(message: 'No data found'));
         } else if (state is TvShowLoaded) {
           emit(_buildLoaded(isLoadingMore: false));
         }
@@ -124,7 +124,7 @@ class TvShowCubit extends Cubit<TvShowState> {
 
       emit(_buildLoaded(hasReachedMax: hasReachedMax));
     } catch (e) {
-      emit(TvShowError(message: 'Lỗi kết nối hệ thống: $e'));
+      emit(TvShowError(message: 'System connection error: $e'));
     } finally {
       _isLoading = false;
     }

@@ -114,7 +114,7 @@ class TvShowDetailSkeleton extends StatelessWidget {
               ),
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemBuilder: (_, __) => Container(
+                itemBuilder: (_, _) => Container(
                   width: getValueForScreenType<double>(
                     context: context,
                     mobile:
@@ -134,7 +134,7 @@ class TvShowDetailSkeleton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                separatorBuilder: (_, _) => const SizedBox(width: 12),
                 itemCount: 4,
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mv2629/notifications/notificationService.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:mv2629/constants/theme.dart';
 import 'package:mv2629/widgets/custom_header.dart';
@@ -6,7 +7,12 @@ import 'package:mv2629/widgets/custom_header.dart';
 class Settingscreen extends StatelessWidget {
   const Settingscreen({super.key});
 
-  static const List<String> settingsOptions = ['Share', 'Rate App', 'Policy'];
+  static const List<String> settingsOptions = [
+    'Test Notification',
+    'Share',
+    'Rate App',
+    'Policy',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +38,13 @@ class Settingscreen extends StatelessWidget {
                     child: _SettingsOptionWidget(
                       title: option,
                       onTap: () {
-                        // Handle option tap
+                        if (option == 'Test Notification') {
+                          LocalNotificationService().showInstantNotification(
+                            id: 999,
+                            title: 'Test Notification',
+                            body: 'This is a test notification from Settings.',
+                          );
+                        }
                       },
                     ),
                   ),

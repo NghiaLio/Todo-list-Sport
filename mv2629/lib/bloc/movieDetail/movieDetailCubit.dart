@@ -69,8 +69,9 @@ class MovieDetailCubit extends Cubit<MovieDetailState> {
   Future<void> loadMoreSimilar(int id) async {
     if (_isLoading) return;
     final currentState = state;
-    if (currentState is! MovieDetailLoaded || currentState.hasReachedMax)
+    if (currentState is! MovieDetailLoaded || currentState.hasReachedMax) {
       return;
+    }
 
     _isLoading = true;
     emit(currentState.copyWith(isLoadingMore: true));
