@@ -1,6 +1,6 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:mv2629/game/penalty_game.dart';
+import 'package:mv2629/views/game/penalty_game.dart';
 
 class PenaltyGameScreen extends StatefulWidget {
   const PenaltyGameScreen({super.key});
@@ -584,7 +584,7 @@ class _ResultOverlayState extends State<ResultOverlay>
                     ),
                     const SizedBox(width: 16),
                     _ResultBtn(
-                      label: 'Home',
+                      label: 'Back',
                       color: const Color(0xFF37474F),
                       onTap: widget.onHome,
                     ),

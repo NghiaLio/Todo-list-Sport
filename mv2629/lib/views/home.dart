@@ -155,17 +155,18 @@ class _DrawerWidget extends StatelessWidget {
             isSelected: false,
             onTap: () => onNavigate('/statistical'),
           ),
-          _CustomDrawerItem(
-            icon: Icons.settings,
-            label: 'Setting',
-            isSelected: false,
-            onTap: () => onNavigate('/settings'),
-          ),
+
           _CustomDrawerItem(
             icon: Icons.sports_esports,
             label: 'Game',
             isSelected: false,
             onTap: () => onNavigate('/game'),
+          ),
+          _CustomDrawerItem(
+            icon: Icons.settings,
+            label: 'Setting',
+            isSelected: false,
+            onTap: () => onNavigate('/settings'),
           ),
         ],
       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mv2629/notifications/notificationService.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:mv2629/constants/theme.dart';
 import 'package:mv2629/widgets/custom_header.dart';
@@ -9,12 +8,7 @@ import 'package:share_plus/share_plus.dart';
 class Settingscreen extends StatelessWidget {
   const Settingscreen({super.key});
 
-  static const List<String> settingsOptions = [
-    'Test Notification',
-    'Share',
-    'Rate App',
-    'Policy',
-  ];
+  static const List<String> settingsOptions = ['Share', 'Rate App', 'Policy'];
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +34,7 @@ class Settingscreen extends StatelessWidget {
                     child: _SettingsOptionWidget(
                       title: option,
                       onTap: () {
-                        if (option == 'Test Notification') {
-                          LocalNotificationService().showInstantNotification(
-                            id: 999,
-                            title: 'Test Notification',
-                            body: 'This is a test notification from Settings.',
-                          );
-                        } else if (option == 'Share') {
+                        if (option == 'Share') {
                           Share.share(
                             'Check out this amazing app: https://example.com/app',
                             subject: 'Amazing App',
