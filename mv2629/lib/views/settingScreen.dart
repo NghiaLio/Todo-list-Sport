@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mv2629/notifications/notificationService.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:mv2629/constants/theme.dart';
 import 'package:mv2629/widgets/custom_header.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Settingscreen extends StatelessWidget {
   const Settingscreen({super.key});
@@ -44,6 +46,15 @@ class Settingscreen extends StatelessWidget {
                             title: 'Test Notification',
                             body: 'This is a test notification from Settings.',
                           );
+                        } else if (option == 'Share') {
+                          Share.share(
+                            'Check out this amazing app: https://example.com/app',
+                            subject: 'Amazing App',
+                          );
+                        } else if (option == 'Rate App') {
+                          showRateDialog(context);
+                        } else if (option == 'Policy') {
+                          Navigator.pushNamed(context, '/policy');
                         }
                       },
                     ),
@@ -90,4 +101,41 @@ class _SettingsOptionWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+void showRateDialog(BuildContext context) {
+  showCupertinoDialog(
+    context: context,
+    builder: (_) => CupertinoAlertDialog(
+      title: const Text('Enjoying the app?'),
+      content: const Padding(
+        padding: EdgeInsets.only(top: 8),
+        child: Text('Tap a star to rate it on the App Store.'),
+      ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(5, (index) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                // fake action
+              },
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4),
+                child: Icon(
+                  CupertinoIcons.star_fill,
+                  color: CupertinoColors.systemYellow,
+                ),
+              ),
+            );
+          }),
+        ),
+        CupertinoDialogAction(
+          child: const Text('Later'),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    ),
+  );
 }

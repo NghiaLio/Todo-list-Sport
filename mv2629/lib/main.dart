@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mv2629/views/policyScreen.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
@@ -20,6 +21,7 @@ import 'package:mv2629/views/splashScreen.dart';
 import 'package:mv2629/views/statisticalScreen.dart';
 import 'package:mv2629/views/todoScreen.dart';
 import 'package:mv2629/views/tvScreen.dart';
+import 'package:mv2629/views/game/penalty_home_screen.dart';
 import 'package:path_provider/path_provider.dart';
 import 'constants/theme.dart';
 
@@ -98,12 +100,14 @@ class MyApp extends StatelessWidget {
           '/tv': (context) => const Tvscreen(), // Placeholder for TV Screen
           '/statistical': (context) => const Statisticalscreen(),
           '/settings': (context) => Settingscreen(),
+          '/game': (context) => const PenaltyHomeScreen(),
           '/todo': (context) =>
               const TodoScreen(), // Placeholder for To Do List Screen
           '/calendar': (context) =>
               const CalendarScreen(), // Placeholder for Calendar Screen
           '/addTask': (context) =>
-              AddTaskCalendar(), // Placeholder for Add Task Calendar Screen
+              AddTaskCalendar(), 
+          '/policy': (context) => const PolicyScreenIOS(), // Placeholder for Privacy Policy Screen
         },
       ),
     );

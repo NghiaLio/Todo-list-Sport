@@ -112,12 +112,7 @@ class _DrawerWidget extends StatelessWidget {
         ),
       ),
       backgroundColor: AppTheme.primaryColor,
-      width: getValueForScreenType<double>(
-        context: context,
-        mobile: MediaQuery.of(context).size.width * 0.7,
-        tablet: MediaQuery.of(context).size.width * 0.4,
-        desktop: MediaQuery.of(context).size.width * 0.3,
-      ),
+      width: MediaQuery.of(context).size.width * 0.4,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -165,6 +160,12 @@ class _DrawerWidget extends StatelessWidget {
             label: 'Setting',
             isSelected: false,
             onTap: () => onNavigate('/settings'),
+          ),
+          _CustomDrawerItem(
+            icon: Icons.sports_esports,
+            label: 'Game',
+            isSelected: false,
+            onTap: () => onNavigate('/game'),
           ),
         ],
       ),
