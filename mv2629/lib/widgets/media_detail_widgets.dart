@@ -8,6 +8,7 @@ import 'package:readmore/readmore.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class MediaDetailViewModel {
+  final bool isMovie;
   final String name;
   final String dateText;
   final String overview;
@@ -20,6 +21,7 @@ class MediaDetailViewModel {
   final String genres;
 
   const MediaDetailViewModel({
+    required this.isMovie,
     required this.name,
     required this.dateText,
     required this.overview,
@@ -74,7 +76,10 @@ class MediaDetailContent extends StatelessWidget {
           const SizedBox(height: 12),
           _buildHeaderInfo(context),
           const SizedBox(height: 1),
-          if (model.keyVideo != null) _buildTrailerButton(context),
+          if (model.keyVideo != null && model.overview.isNotEmpty)
+            _buildTrailerButton(context),
+          if (model.keyVideo == null || model.overview.isEmpty)
+            _buildTextNoTrailer(context),
           const SizedBox(height: 32),
           _buildOverviewSection(context),
           const SizedBox(height: 12),
@@ -132,20 +137,23 @@ class MediaDetailContent extends StatelessWidget {
                       color: AppTheme.greyColor,
                     ),
             ),
-            if (model.keyVideo != null)
+            if (model.keyVideo != null && model.keyVideo!.isNotEmpty)
               Positioned(
                 bottom: 16,
                 left: 16,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: Colors.black26,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow,
-                    color: AppTheme.whiteColor,
-                    size: 32,
+                child: GestureDetector(
+                  onTap: onPlayTrailer,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: Colors.black26,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.play_arrow,
+                      color: AppTheme.whiteColor,
+                      size: 32,
+                    ),
                   ),
                 ),
               ),
@@ -221,6 +229,18 @@ class MediaDetailContent extends StatelessWidget {
     );
   }
 
+  Widget _buildTextNoTrailer(BuildContext context) {
+    return Center(
+      child: Text(
+        'No trailer available.',
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: AppTheme.grey400Color,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    );
+  }
+
   Widget _buildOverviewSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,13 +255,16 @@ class MediaDetailContent extends StatelessWidget {
         const SizedBox(height: 8),
         _InfoRowWidget(
           title: 'RUNTIME',
-          content: '${model.episodeRuntime} Minutes',
+          content: model.isMovie
+              ? '${model.episodeRuntime} Minutes'
+              : '90 Minutes',
         ),
-        _InfoRowWidget(
-          title: 'TOTAL RUNTIME',
-          content:
-              '${model.totalRuntime} Minutes — ${model.totalEpisodes} Episodes',
-        ),
+        !model.isMovie
+            ? _InfoRowWidget(
+                title: 'EPISODES',
+                content: '${model.totalEpisodes} Episodes',
+              )
+            : SizedBox.shrink(),
         _InfoRowWidget(
           title: 'LANGUAGES',
           content: model.originalLanguage.toUpperCase(),

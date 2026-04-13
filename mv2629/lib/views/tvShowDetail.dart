@@ -109,6 +109,7 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
                       totalEpisodes: tv.numberOfEpisodes,
                       originalLanguage: tv.originalLanguage,
                       genres: tv.getGenres(),
+                      isMovie: false
                     ),
                     similarItems: loaded.similarTvShows
                         .map(

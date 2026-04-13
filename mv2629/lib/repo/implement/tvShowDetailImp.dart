@@ -63,7 +63,11 @@ class TvShowDetailService implements TvShowDetailRepo {
       );
       final results = res.data['results'] as List;
       if (results.isNotEmpty) {
-        return results[0]['key'];
+        for (var video in results) {
+          if (video['site'] == 'YouTube' && video['type'] == 'Trailer') {
+            return video['key'];
+          }
+        }
       }
       return null;
     } catch (e) {
