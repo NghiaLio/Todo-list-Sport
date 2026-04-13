@@ -29,10 +29,27 @@ class ApiService {
   ApiService._internal({Dio? dio}) : _dio = dio ?? Dio() {
     if (dio == null) {
       _dio.options.baseUrl = dotenv.env['URL_DB'] ?? "";
-      _dio.options.headers['Authorization'] =
-          'Bearer ${dotenv.env['API_TOKEN']}';
       _dio.options.connectTimeout = const Duration(seconds: 10);
       _dio.options.receiveTimeout = const Duration(seconds: 10);
+
+      final apiKey = dotenv.env['API_KEY'] ?? '';
+      _dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            final queryParameters = Map<String, dynamic>.from(
+              options.queryParameters,
+            );
+
+            if (apiKey.isNotEmpty) {
+              queryParameters.putIfAbsent('api_key', () => apiKey);
+            }
+            queryParameters.putIfAbsent('language', () => 'en-US');
+
+            options.queryParameters = queryParameters;
+            handler.next(options);
+          },
+        ),
+      );
     }
   }
 

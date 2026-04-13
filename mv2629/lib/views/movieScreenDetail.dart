@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../bloc/movieDetail/movieDetailCubit.dart';
 import '../bloc/movieDetail/movieDetailState.dart';
 import '../constants/theme.dart';
@@ -42,7 +44,18 @@ class __MovieScreenDetailViewState extends State<_MovieScreenDetailView> {
     context.read<MovieDetailCubit>().getMovieDetail(widget.movieId);
   }
 
-  void _onPlayTrailer() {}
+  void _onPlayTrailer(String key) async {
+    final youtubeUrl =
+        dotenv.env['BASE_URL_YOUTUBE'] ?? 'https://www.youtube.com/watch?v=';
+    final url = Uri.parse('$youtubeUrl$key');
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not launch trailer')),
+        );
+      }
+    }
+  }
 
   void _onTapSimilarMovie(int id) {
     Navigator.push(
@@ -95,6 +108,7 @@ class __MovieScreenDetailViewState extends State<_MovieScreenDetailView> {
                       totalEpisodes: detail.durationFallback,
                       originalLanguage: detail.originalLanguage,
                       genres: detail.getGenres(),
+                      isMovie: true,
                     ),
                     similarItems: loaded.similarMovies
                         .map(
@@ -106,7 +120,7 @@ class __MovieScreenDetailViewState extends State<_MovieScreenDetailView> {
                         .toList(),
                     similarScrollController: _similarScrollController,
                     onBack: () => Navigator.of(context).pop(),
-                    onPlayTrailer: _onPlayTrailer,
+                    onPlayTrailer: () => _onPlayTrailer(detail.keyVideo ?? ''),
                     onTapSimilar: _onTapSimilarMovie,
                   );
                 },

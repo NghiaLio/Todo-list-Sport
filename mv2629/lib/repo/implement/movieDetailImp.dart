@@ -27,7 +27,7 @@ class MovieDetailService implements MovieDetailRepo {
            "",
        baseUrlMovieVideoTrailer =
            baseUrlMovieVideoTrailer ??
-           dotenv.env['BASE_URL_GET_VIDEO_TRAILER'] ??
+           dotenv.env['BASE_URL_GET_MOVIE_VIDEO_TRAILER'] ??
            "";
 
   @override
@@ -65,7 +65,11 @@ class MovieDetailService implements MovieDetailRepo {
       );
       final results = res.data['results'] as List;
       if (results.isNotEmpty) {
-        return results[0]['key'];
+        for (var video in results) {
+          if (video['site'] == 'YouTube' && video['type'] == 'Trailer') {
+            return video['key'];
+          }
+        }
       }
       return null;
     } catch (e) {
