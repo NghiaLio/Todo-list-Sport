@@ -89,7 +89,6 @@ class PenaltyGame extends FlameGame {
 
     _randomizeWindStrength();
 
-    overlays.add(hudOverlay);
     overlays.add(controlsOverlay);
   }
 

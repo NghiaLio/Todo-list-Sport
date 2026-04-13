@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:mv2629/models/taskSportCard.dart';
+import '../../models/taskSportCard.dart';
 
 abstract class SportsState extends Equatable {
   @override

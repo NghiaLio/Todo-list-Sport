@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:mv2629/models/movie.dart';
-import 'package:mv2629/models/movieDetailModel.dart';
+import '../../models/movie.dart';
+import '../../models/movieDetailModel.dart';
 
 abstract class MovieDetailState extends Equatable {
   @override

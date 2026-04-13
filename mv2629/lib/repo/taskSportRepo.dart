@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'package:mv2629/models/taskSportCard.dart';
+import '../models/taskSportCard.dart';
 
 abstract class TaskSportRepo {
   Future<TaskSportCardModel?> createTaskSportCard(TaskSportCardModel task);

@@ -1,10 +1,10 @@
 // d:\Lasbom-Dev\Project-dev\mv2629\lib\bloc\movies\movieCubit.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/movies/movieState.dart';
-import 'package:mv2629/models/filterMovie.dart';
-import 'package:mv2629/models/movie.dart';
-import 'package:mv2629/repo/implement/movieImp.dart';
+import '../../bloc/movies/movieState.dart';
+import '../../models/filterMovie.dart';
+import '../../models/movie.dart';
+import '../../repo/implement/movieImp.dart';
 
 class MovieCubit extends Cubit<MovieState> {
   final MovieService movieService;

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mv2629/bloc/tvShowDetail/tvShowDetailCubit.dart';
-import 'package:mv2629/bloc/tvShowDetail/tvShowDetailState.dart';
+import '../bloc/tvShowDetail/tvShowDetailCubit.dart';
+import '../bloc/tvShowDetail/tvShowDetailState.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/views/skeleton/tv_show_detail_skeleton.dart';
-import 'package:mv2629/widgets/media_detail_widgets.dart';
+import '../constants/theme.dart';
+import '../views/skeleton/tv_show_detail_skeleton.dart';
+import '../widgets/media_detail_widgets.dart';
 
 class TvShowDetail extends StatelessWidget {
   const TvShowDetail({super.key, required this.tvShowId});

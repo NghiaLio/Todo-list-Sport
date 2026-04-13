@@ -1,10 +1,10 @@
 // d:\Lasbom-Dev\Project-dev\mv2629\lib\bloc\tvShows\tvShowCubit.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/tvShows/tvShowState.dart';
-import 'package:mv2629/models/filterTvShow.dart';
-import 'package:mv2629/models/tvShow.dart';
-import 'package:mv2629/repo/implement/tvShowImp.dart';
+import '../../bloc/tvShows/tvShowState.dart';
+import '../../models/filterTvShow.dart';
+import '../../models/tvShow.dart';
+import '../../repo/implement/tvShowImp.dart';
 
 class TvShowCubit extends Cubit<TvShowState> {
   final TvShowService tvShowService;

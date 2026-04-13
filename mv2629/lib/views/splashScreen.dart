@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use, file_names
 
 import 'package:flutter/material.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/widgets/button_arrow.dart';
+import '../constants/theme.dart';
+import '../widgets/button_arrow.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});

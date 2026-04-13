@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:mv2629/models/filterMovie.dart';
-import 'package:mv2629/models/movie.dart';
+import '../../models/filterMovie.dart';
+import '../../models/movie.dart';
 
 abstract class MovieState extends Equatable {
   @override

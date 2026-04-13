@@ -1,5 +1,5 @@
-import 'package:mv2629/models/tvShow.dart';
-import 'package:mv2629/models/tvShowDetailModel.dart';
+import '../models/tvShow.dart';
+import '../models/tvShowDetailModel.dart';
 
 abstract class TvShowDetailRepo {
   Future<TvDetail?> getTvShowDetail(int id);

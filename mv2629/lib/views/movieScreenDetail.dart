@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/movieDetail/movieDetailCubit.dart';
-import 'package:mv2629/bloc/movieDetail/movieDetailState.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/views/skeleton/tv_show_detail_skeleton.dart';
-import 'package:mv2629/widgets/media_detail_widgets.dart';
+import '../bloc/movieDetail/movieDetailCubit.dart';
+import '../bloc/movieDetail/movieDetailState.dart';
+import '../constants/theme.dart';
+import '../views/skeleton/tv_show_detail_skeleton.dart';
+import '../widgets/media_detail_widgets.dart';
 
 class MovieScreenDetail extends StatelessWidget {
   const MovieScreenDetail({super.key, required this.movieId});

@@ -3,13 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:mv2629/bloc/todos/todosCubit.dart';
-import 'package:mv2629/bloc/todos/todosState.dart';
-import 'package:mv2629/models/taskTodoModel.dart';
-import 'package:mv2629/widgets/date_header.dart';
-import 'package:mv2629/widgets/custom_header.dart';
-import 'package:mv2629/widgets/task_content_card.dart';
-import 'package:mv2629/views/skeleton/todo_task_skeleton.dart';
+import '../bloc/todos/todosCubit.dart';
+import '../bloc/todos/todosState.dart';
+import '../models/taskTodoModel.dart';
+import '../widgets/date_header.dart';
+import '../widgets/custom_header.dart';
+import '../widgets/task_content_card.dart';
+import '../views/skeleton/todo_task_skeleton.dart';
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});

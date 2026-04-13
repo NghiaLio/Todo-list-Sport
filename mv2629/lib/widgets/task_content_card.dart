@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/widgets/task_action_buttons.dart';
+import '../constants/theme.dart';
+import '../widgets/task_action_buttons.dart';
 
 class TaskContentCard extends StatelessWidget {
   final String taskName;

@@ -1,8 +1,8 @@
 // ignore_for_file: file_names
 
-import 'package:mv2629/models/filterMovie.dart';
-import 'package:mv2629/models/taskSportCard.dart';
-import 'package:mv2629/models/movie.dart';
+import '../models/filterMovie.dart';
+import '../models/taskSportCard.dart';
+import '../models/movie.dart';
 
 abstract class MovieRepo {
   Future<List<Movie>?> discoverMovie(int page);

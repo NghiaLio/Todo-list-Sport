@@ -1,8 +1,8 @@
 // ignore_for_file: file_names
 
 import 'package:hive/hive.dart';
-import 'package:mv2629/models/taskSportCard.dart';
-import 'package:mv2629/repo/taskSportRepo.dart';
+import '../../models/taskSportCard.dart';
+import '../../repo/taskSportRepo.dart';
 
 class TaskSportService implements TaskSportRepo {
   static const String _boxName = 'taskSportCards';

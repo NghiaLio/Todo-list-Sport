@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/widgets/custom_header.dart';
+import '../constants/theme.dart';
+import '../widgets/custom_header.dart';
 import 'package:share_plus/share_plus.dart';
 
 class Settingscreen extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:mv2629/models/filterTvShow.dart';
-import 'package:mv2629/models/tvShow.dart';
+import '../../models/filterTvShow.dart';
+import '../../models/tvShow.dart';
 
 abstract class TvShowState extends Equatable {
   @override

@@ -1,9 +1,9 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mv2629/models/filterMovie.dart';
-import 'package:mv2629/models/taskSportCard.dart';
-import 'package:mv2629/models/movie.dart';
-import 'package:mv2629/repo/dioClient.dart';
-import 'package:mv2629/repo/movieRepo.dart';
+import '../../models/filterMovie.dart';
+import '../../models/taskSportCard.dart';
+import '../../models/movie.dart';
+import '../../repo/dioClient.dart';
+import '../../repo/movieRepo.dart';
 
 class MovieService implements MovieRepo {
   final ApiService dio;

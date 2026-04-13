@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/movieDetail/movieDetailState.dart';
-import 'package:mv2629/models/movie.dart';
-import 'package:mv2629/repo/implement/movieDetailImp.dart';
-import 'package:mv2629/repo/movieDetailRepo.dart';
+import '../../bloc/movieDetail/movieDetailState.dart';
+import '../../models/movie.dart';
+import '../../repo/implement/movieDetailImp.dart';
+import '../../repo/movieDetailRepo.dart';
 
 class MovieDetailCubit extends Cubit<MovieDetailState> {
   final MovieDetailRepo movieDetailService;

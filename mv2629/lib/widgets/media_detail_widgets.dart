@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/utils/image_helper.dart';
-import 'package:mv2629/views/skeleton/image_skeleton.dart';
-import 'package:mv2629/widgets/button_arrow.dart';
+import '../constants/theme.dart';
+import '../utils/image_helper.dart';
+import '../views/skeleton/image_skeleton.dart';
+import '../widgets/button_arrow.dart';
 import 'package:readmore/readmore.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 

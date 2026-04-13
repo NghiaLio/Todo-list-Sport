@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:mv2629/constants/theme.dart';
+import '../../constants/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
 class TvShowDetailSkeleton extends StatelessWidget {

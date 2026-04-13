@@ -1,6 +1,8 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:mv2629/views/game/penalty_game.dart';
+import 'package:mv2629/constants/theme.dart';
+import 'package:mv2629/widgets/button_arrow.dart';
+import '../../views/game/penalty_game.dart';
 
 class PenaltyGameScreen extends StatefulWidget {
   const PenaltyGameScreen({super.key});
@@ -15,53 +17,16 @@ class _PenaltyGameScreenState extends State<PenaltyGameScreen> {
   @override
   void initState() {
     super.initState();
-    _game = PenaltyGame();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: GameWidget<PenaltyGame>(
-        game: _game,
-        overlayBuilderMap: {
-          PenaltyGame.hudOverlay: (ctx, game) => HudOverlay(game: game),
-          PenaltyGame.controlsOverlay: (ctx, game) =>
-              ControlsOverlay(game: game),
-          PenaltyGame.goalOverlay: (ctx, game) => GoalNotifOverlay(game: game),
-          PenaltyGame.resultOverlay: (ctx, game) =>
-              ResultOverlay(game: game, onHome: () => Navigator.of(ctx).pop()),
-        },
-        initialActiveOverlays: const [
-          PenaltyGame.hudOverlay,
-          PenaltyGame.controlsOverlay,
-        ],
-      ),
-    );
-  }
-}
-
-class HudOverlay extends StatefulWidget {
-  final PenaltyGame game;
-  const HudOverlay({super.key, required this.game});
-
-  @override
-  State<HudOverlay> createState() => _HudOverlayState();
-}
-
-class _HudOverlayState extends State<HudOverlay> {
-  @override
-  void initState() {
-    super.initState();
-    widget.game.addListener(_rebuild);
+    _game = PenaltyGame()..addListener(_onGameChanged);
   }
 
   @override
   void dispose() {
-    widget.game.removeListener(_rebuild);
+    _game.removeListener(_onGameChanged);
     super.dispose();
   }
 
-  void _rebuild() {
+  void _onGameChanged() {
     if (mounted) {
       setState(() {});
     }
@@ -69,126 +34,210 @@ class _HudOverlayState extends State<HudOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    final game = widget.game;
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF040810),
+              Color(0xFF081420),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Column(
+          children: [
+            // const SizedBox(height: 50),
+            GameHudBar(
+              game: _game,
+              onBack: () => Navigator.of(context).pop(),
+            ),
+            // const SizedBox(height: 8),
+            Expanded(
+              child: GameWidget<PenaltyGame>(
+                game: _game,
+                overlayBuilderMap: {
+                  PenaltyGame.controlsOverlay: (ctx, game) =>
+                      ControlsOverlay(game: game),
+                  PenaltyGame.goalOverlay: (ctx, game) =>
+                      GoalNotifOverlay(game: game),
+                  PenaltyGame.resultOverlay: (ctx, game) =>
+                      ResultOverlay(game: game, onHome: () => Navigator.of(ctx).pop()),
+                },
+                initialActiveOverlays: const [
+                  PenaltyGame.controlsOverlay,
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class GameHudBar extends StatelessWidget {
+  final PenaltyGame game;
+  final VoidCallback onBack;
+
+  const GameHudBar({super.key, required this.game, required this.onBack});
+
+  @override
+  Widget build(BuildContext context) {
     final progress = game.score / 100.0;
     final shotsLeft = (PenaltyGame.maxShots - game.shotsTaken).clamp(
       0,
       PenaltyGame.maxShots,
     );
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.65),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white24, width: 1),
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.primaryColor,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(18),
+          bottomRight: Radius.circular(18),
+        ),
+      ),
+      padding: const EdgeInsets.fromLTRB(12, 60, 12, 14),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              // GestureDetector(
+              //   onTap: onBack,
+              //   child: Container(
+              //     padding: const EdgeInsets.all(8),
+              //     decoration: BoxDecoration(
+              //       color: Colors.black.withOpacity(0.65),
+              //       borderRadius: BorderRadius.circular(12),
+              //       border: Border.all(color: Colors.white24, width: 1),
+              //     ),
+              //     child: const Icon(
+              //       Icons.arrow_back,
+              //       color: Colors.white70,
+              //       size: 20,
+              //     ),
+              //   ),
+              // ),
+
+              ButtonArrow(
+                onPressed: onBack,
+                size:40
+              ),
+
+              const SizedBox(width: 10),
+              _HudChip(
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.sports_soccer,
                       color: Colors.white70,
-                      size: 22,
+                      size: 16,
                     ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                _HudChip(
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.sports_soccer,
-                        color: Colors.white70,
-                        size: 18,
+                    const SizedBox(width: 6),
+                    Text(
+                      'Shot ${game.shotsTaken}/${PenaltyGame.maxShots}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Shot ${game.shotsTaken}/${PenaltyGame.maxShots}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                _HudChip(
-                  child: Row(
-                    children: [
-                      const Icon(Icons.stars, color: Colors.white70, size: 16),
-                      const SizedBox(width: 6),
-                      Text(
-                        '${game.score}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Text(
-                        ' / 100',
-                        style: TextStyle(color: Colors.white54, fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                _HudChip(
-                  child: Text(
-                    'Left: $shotsLeft',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                _HudChip(
-                  child: Text(
-                    'Wind: ${game.windStrength.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: Colors.lightBlueAccent,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
+              ),
+              const Spacer(),
+              _HudChip(
+                child: Row(
+                  children: [
+                    const Icon(Icons.stars, color: Colors.white70, size: 15),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${game.score}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
+                    const Text(
+                      ' / 100',
+                      style: TextStyle(color: Colors.white54, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              _HudChip(
+                child: Text(
+                  'Left: $shotsLeft',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const Spacer(),
-              ],
-            ),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: progress.clamp(0.0, 1.0),
-                backgroundColor: Colors.white12,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  progress >= 1.0
-                      ? const Color(0xFFFFD700)
-                      : progress >= 0.6
-                      ? const Color(0xFF7FFF00)
-                      : const Color(0xFF42A5F5),
+              ),
+              const SizedBox(width: 8),
+              _HudChip(
+                child: Text(
+                  'Wind: ${game.windStrength.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: Colors.lightBlueAccent,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                minHeight: 6,
+              ),
+              const Spacer(),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              height: 8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withOpacity(0.1),
+                    Colors.white.withOpacity(0.05),
+                  ],
+                ),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 0.5,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: LinearProgressIndicator(
+                  value: progress.clamp(0.0, 1.0),
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    progress >= 1.0
+                        ? const Color(0xFFFF6B35) // Orange-red for perfect score
+                        : progress >= 0.8
+                            ? const Color(0xFFFFD23F) // Gold for high score
+                            : progress >= 0.6
+                                ? const Color(0xFF06FFA5) // Bright green
+                                : progress >= 0.4
+                                    ? const Color(0xFF00D4FF) // Cyan
+                                    : const Color(0xFFFF0080), // Magenta for low score
+                  ),
+                  minHeight: 8,
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

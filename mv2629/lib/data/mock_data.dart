@@ -1,4 +1,4 @@
-import 'package:mv2629/models/taskSportCard.dart';
+import '../models/taskSportCard.dart';
 
 final List<TaskSportCardModel> mockTasks = [
   // Golf tasks

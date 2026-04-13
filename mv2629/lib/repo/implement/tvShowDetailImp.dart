@@ -1,8 +1,8 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mv2629/models/tvShow.dart';
-import 'package:mv2629/models/tvShowDetailModel.dart';
-import 'package:mv2629/repo/dioClient.dart';
-import 'package:mv2629/repo/tvShowDetailRepo.dart';
+import '../../models/tvShow.dart';
+import '../../models/tvShowDetailModel.dart';
+import '../../repo/dioClient.dart';
+import '../../repo/tvShowDetailRepo.dart';
 
 class TvShowDetailService implements TvShowDetailRepo {
   final ApiService dio;

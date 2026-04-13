@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/tvShowDetail/tvShowDetailState.dart';
-import 'package:mv2629/models/tvShow.dart';
-import 'package:mv2629/repo/implement/tvShowDetailImp.dart';
-import 'package:mv2629/repo/tvShowDetailRepo.dart';
+import '../../bloc/tvShowDetail/tvShowDetailState.dart';
+import '../../models/tvShow.dart';
+import '../../repo/implement/tvShowDetailImp.dart';
+import '../../repo/tvShowDetailRepo.dart';
 
 class TvShowDetailCubit extends Cubit<TvShowDetailState> {
   final TvShowDetailRepo tvShowDetailService;

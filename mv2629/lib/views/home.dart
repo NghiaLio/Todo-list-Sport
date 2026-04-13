@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/todos/todosCubit.dart';
-import 'package:mv2629/bloc/todos/todosState.dart';
-import 'package:mv2629/constants/theme.dart';
+import '../bloc/todos/todosCubit.dart';
+import '../bloc/todos/todosState.dart';
+import '../constants/theme.dart';
 import '../widgets/button_arrow.dart';
 
 class Home extends StatefulWidget {
@@ -90,7 +90,21 @@ class _AppBarWidget extends StatelessWidget {
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: IconButton(
-        icon: Image.asset('assets/iconDrawer.png', width: 24, height: 24),
+        icon: Image.asset(
+          'assets/iconDrawer.png',
+          width: getValueForScreenType<double>(
+            context: context,
+            mobile: 24,
+            tablet: 40,
+            desktop: 24,
+          ),
+          height: getValueForScreenType<double>(
+            context: context,
+            mobile: 24,
+            tablet: 40,
+            desktop: 24,
+          ),
+        ),
         onPressed: onOpenDrawer,
       ),
     );
@@ -281,7 +295,21 @@ class _SportsCardWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Center(
-                child: Image.asset('assets/logo.png', width: 91, height: 91),
+                child: Image.asset(
+                  'assets/logo.png',
+                  width: getValueForScreenType<double>(
+                    context: context,
+                    mobile: 91,
+                    tablet: 120,
+                    desktop: 91,
+                  ),
+                  height: getValueForScreenType<double>(
+                    context: context,
+                    mobile: 91,
+                    tablet: 120,
+                    desktop: 91,
+                  ),
+                ),
               ),
               Text(
                 'Sports',
@@ -356,39 +384,47 @@ class _TodoCardWidget extends StatelessWidget {
                       style: Theme.of(context).textTheme.displayMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 110,
-                                    height: 110,
-                                    child: CircularProgressIndicator(
-                                      value: completionRate,
-                                      strokeWidth: 8,
-                                      valueColor: const AlwaysStoppedAnimation(
-                                        AppTheme.whiteColor,
-                                      ),
-                                      backgroundColor: AppTheme.white20Color,
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SizedBox(
+                                  width: getValueForScreenType<double>(
+                                    context: context,
+                                    mobile: 110,
+                                    tablet: 150,
+                                    desktop: 130,
+                                  ),
+                                  height: getValueForScreenType<double>(
+                                    context: context,
+                                    mobile: 110,
+                                    tablet: 150,
+                                    desktop: 130,
+                                  ),
+                                  child: CircularProgressIndicator(
+                                    value: completionRate,
+                                    strokeWidth: 8,
+                                    valueColor: const AlwaysStoppedAnimation(
+                                      AppTheme.whiteColor,
                                     ),
+                                    backgroundColor: AppTheme.white20Color,
                                   ),
-                                  Text(
-                                    '$completed/$total',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .displayLarge
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+                                ),
+                                Text(
+                                  '$completed/$total',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displayLarge
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox.shrink(),

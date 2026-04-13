@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:mv2629/views/game/penalty_game_screen.dart';
+import '../../views/game/penalty_game_screen.dart';
 
 class PenaltyHomeScreen extends StatefulWidget {
   const PenaltyHomeScreen({super.key});
@@ -53,7 +53,7 @@ class _PenaltyHomeScreenState extends State<PenaltyHomeScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 28),
                 child: Column(
                   children: [
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 10),
                     AnimatedBuilder(
                       animation: _float,
                       builder: (_, child) => Transform.translate(

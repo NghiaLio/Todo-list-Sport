@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/models/taskSportCard.dart';
+import '../constants/theme.dart';
+import '../models/taskSportCard.dart';
 
 class MatchDialog extends StatefulWidget {
   final TaskSportCardModel? task;
@@ -124,7 +124,7 @@ class _MatchDialogState extends State<MatchDialog> {
               _buildInfoCard(
                 label: 'Time',
                 controller: _timeController,
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.numberWithOptions(signed: true),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9:]')),
                   LengthLimitingTextInputFormatter(5),
@@ -134,7 +134,7 @@ class _MatchDialogState extends State<MatchDialog> {
               _buildInfoCard(
                 label: 'Scored',
                 controller: _scoreController,
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.numberWithOptions(signed: true),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')),
                   LengthLimitingTextInputFormatter(5),

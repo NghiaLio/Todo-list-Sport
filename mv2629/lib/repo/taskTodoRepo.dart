@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'package:mv2629/models/taskTodoModel.dart';
+import '../models/taskTodoModel.dart';
 
 class TaskTodoPage {
   final List<TaskTodoModel> items;

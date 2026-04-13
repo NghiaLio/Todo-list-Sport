@@ -4,15 +4,15 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:mv2629/bloc/todos/todosCubit.dart';
-import 'package:mv2629/bloc/todos/todosState.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/models/taskTodoModel.dart';
-import 'package:mv2629/views/addTaskCalendarScreen.dart';
-import 'package:mv2629/views/skeleton/calendar_task_skeleton.dart';
-import 'package:mv2629/widgets/custom_header.dart';
-import 'package:mv2629/widgets/task_content_card.dart';
-import 'package:mv2629/widgets/custom_floating_action_button.dart';
+import '../bloc/todos/todosCubit.dart';
+import '../bloc/todos/todosState.dart';
+import '../constants/theme.dart';
+import '../models/taskTodoModel.dart';
+import '../views/addTaskCalendarScreen.dart';
+import '../views/skeleton/calendar_task_skeleton.dart';
+import '../widgets/custom_header.dart';
+import '../widgets/task_content_card.dart';
+import '../widgets/custom_floating_action_button.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});

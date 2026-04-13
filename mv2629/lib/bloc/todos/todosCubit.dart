@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/models/taskTodoModel.dart';
-import 'package:mv2629/notifications/notificationService.dart';
-import 'package:mv2629/repo/implement/taskTodoImp.dart';
-import 'package:mv2629/repo/taskTodoRepo.dart';
-import 'package:mv2629/bloc/todos/todosState.dart';
+import '../../models/taskTodoModel.dart';
+import '../../notifications/notificationService.dart';
+import '../../repo/implement/taskTodoImp.dart';
+import '../../repo/taskTodoRepo.dart';
+import '../../bloc/todos/todosState.dart';
 
 class TaskTodoCubit extends Cubit<TodoTaskState> {
   TaskTodoCubit({TaskTodoRepo? repo})

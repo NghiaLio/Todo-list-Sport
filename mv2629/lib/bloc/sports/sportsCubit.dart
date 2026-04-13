@@ -1,10 +1,10 @@
 // ignore_for_file: file_names
 
-import 'package:mv2629/bloc/sports/sportsState.dart';
+import '../../bloc/sports/sportsState.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/models/taskSportCard.dart';
-import 'package:mv2629/repo/implement/taskSportImp.dart';
-import 'package:mv2629/repo/taskSportRepo.dart';
+import '../../models/taskSportCard.dart';
+import '../../repo/implement/taskSportImp.dart';
+import '../../repo/taskSportRepo.dart';
 
 class SportsCubit extends Cubit<SportsState> {
   final TaskSportRepo _taskSportRepo = TaskSportService();

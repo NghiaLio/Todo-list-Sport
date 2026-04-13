@@ -3,21 +3,21 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/sports/sportsCubit.dart';
-import 'package:mv2629/bloc/sports/sportsState.dart';
-import 'package:mv2629/data/mock_data.dart';
-import 'package:mv2629/models/taskSportCard.dart';
-import 'package:mv2629/utils/TimeConvert.dart';
-import 'package:mv2629/utils/id_generator.dart';
-import 'package:mv2629/widgets/DialogCreatedTask.dart';
-import 'package:mv2629/widgets/button_arrow.dart';
-import 'package:mv2629/widgets/date_header.dart';
-import 'package:mv2629/widgets/task_action_buttons.dart';
-import 'package:mv2629/widgets/confirm_reject_dialog.dart';
-import 'package:mv2629/widgets/showSnackBar.dart';
-import 'package:mv2629/views/skeleton/list_sport_task_skeleton.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/widgets/custom_floating_action_button.dart';
+import '../bloc/sports/sportsCubit.dart';
+import '../bloc/sports/sportsState.dart';
+import '../data/mock_data.dart';
+import '../models/taskSportCard.dart';
+import '../utils/TimeConvert.dart';
+import '../utils/id_generator.dart';
+import '../widgets/DialogCreatedTask.dart';
+import '../widgets/button_arrow.dart';
+import '../widgets/date_header.dart';
+import '../widgets/task_action_buttons.dart';
+import '../widgets/confirm_reject_dialog.dart';
+import '../widgets/showSnackBar.dart';
+import '../views/skeleton/list_sport_task_skeleton.dart';
+import '../constants/theme.dart';
+import '../widgets/custom_floating_action_button.dart';
 
 class ListSportTaskScreen extends StatefulWidget {
   const ListSportTaskScreen({super.key});
@@ -294,7 +294,7 @@ class _TasksListWidget extends StatelessWidget {
         if (filteredTasks.isEmpty) {
           return Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -393,74 +393,78 @@ class _TaskItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => onEditTask(context, task),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.whiteColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.cardBorderColor, width: 1),
-        ),
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Text section - takes 2/3 of space
-            Expanded(
-              flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Time
-                  Text(
-                    'Time: ${TimeConvert.convertStringTimeToStringTime(task.time)}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppTheme.whiteColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppTheme.cardBorderColor, width: 1),
+          ),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Text section - takes 2/3 of space
+              Expanded(
+                flex: 2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Time
+                    Text(
+                      'Time: ${TimeConvert.convertStringTimeToStringTime(task.time)}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Location
-                  Text(
-                    'Location: ${task.location}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    const SizedBox(height: 8),
+                    // Location
+                    Text(
+                      'Location: ${task.location}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Scored
-                  Text(
-                    'Scored: ${task.scored}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    const SizedBox(height: 8),
+                    // Scored
+                    Text(
+                      'Scored: ${task.scored}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            // Action Buttons - takes 1/3 of space
-            Expanded(
-              flex: 1,
-              child: TaskActionButtons(
-                isCompleted: task.isCompleted,
-                isRejected: rejectedStatus[index] ?? false,
-                onConfirm: () {
-                  onUpdateTask(context, task);
-                },
-                onReject: () {
-                  // Show confirmation dialog before setting reject status
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext dialogContext) {
-                      return ConfirmRejectDialog(
-                        onConfirm: () {
-                          onDeleteTask(context, task.id);
-                        },
-                      );
-                    },
-                  );
-                },
+              // Action Buttons - takes 1/3 of space
+              Expanded(
+                flex: 1,
+                child: TaskActionButtons(
+                  isCompleted: task.isCompleted,
+                  isRejected: rejectedStatus[index] ?? false,
+                  onConfirm: () {
+                    onUpdateTask(context, task);
+                  },
+                  onReject: () {
+                    // Show confirmation dialog before setting reject status
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return ConfirmRejectDialog(
+                          onConfirm: () {
+                            onDeleteTask(context, task.id);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

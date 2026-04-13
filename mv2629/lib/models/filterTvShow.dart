@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:equatable/equatable.dart';
-import 'package:mv2629/models/taskSportCard.dart';
+import '../models/taskSportCard.dart';
 
 class FilterTvShow extends Equatable {
   final double? minRating;

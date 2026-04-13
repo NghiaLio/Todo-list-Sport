@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/todos/todosCubit.dart';
-import 'package:mv2629/models/taskTodoModel.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/utils/id_generator.dart';
-import 'package:mv2629/widgets/custom_header.dart';
-import 'package:mv2629/widgets/showSnackBar.dart';
+import '../bloc/todos/todosCubit.dart';
+import '../models/taskTodoModel.dart';
+import '../constants/theme.dart';
+import '../utils/id_generator.dart';
+import '../widgets/custom_header.dart';
+import '../widgets/showSnackBar.dart';
 
 class AddTaskCalendar extends StatefulWidget {
   final DateTime selectedDate;

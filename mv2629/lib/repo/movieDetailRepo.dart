@@ -1,5 +1,5 @@
-import 'package:mv2629/models/movie.dart';
-import 'package:mv2629/models/movieDetailModel.dart';
+import '../models/movie.dart';
+import '../models/movieDetailModel.dart';
 
 abstract class MovieDetailRepo {
   Future<MovieDetail?> getMovieDetail(int id);

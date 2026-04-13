@@ -54,6 +54,7 @@ dependencies:
   permission_handler: ^11.3.1
   flame: ^1.36.0
   share_plus: ^12.0.2
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -71,7 +72,9 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
+flutter_launcher_icons:
+  ios: true
+  image_path: "assets/icon/Icon.jpg"
 # The following section is specific to Flutter packages.
 flutter:
   # The following line ensures that the Material Icons font is
@@ -83,6 +86,7 @@ flutter:
   assets:
     - assets/
     - .env
+    - assets/icon/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

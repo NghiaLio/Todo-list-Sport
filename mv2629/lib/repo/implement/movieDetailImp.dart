@@ -1,8 +1,8 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mv2629/models/movie.dart';
-import 'package:mv2629/models/movieDetailModel.dart';
-import 'package:mv2629/repo/dioClient.dart';
-import 'package:mv2629/repo/movieDetailRepo.dart';
+import '../../models/movie.dart';
+import '../../models/movieDetailModel.dart';
+import '../../repo/dioClient.dart';
+import '../../repo/movieDetailRepo.dart';
 
 class MovieDetailService implements MovieDetailRepo {
   final ApiService dio;

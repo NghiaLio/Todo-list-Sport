@@ -1,8 +1,8 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/models/taskSportCard.dart';
+import '../constants/theme.dart';
+import '../models/taskSportCard.dart';
 
 class MediaFilterData {
   final double? minRating;
