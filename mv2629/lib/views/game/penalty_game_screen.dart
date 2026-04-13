@@ -38,10 +38,7 @@ class _PenaltyGameScreenState extends State<PenaltyGameScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF040810),
-              Color(0xFF081420),
-            ],
+            colors: [Color(0xFF040810), Color(0xFF081420)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -49,10 +46,7 @@ class _PenaltyGameScreenState extends State<PenaltyGameScreen> {
         child: Column(
           children: [
             // const SizedBox(height: 50),
-            GameHudBar(
-              game: _game,
-              onBack: () => Navigator.of(context).pop(),
-            ),
+            GameHudBar(game: _game, onBack: () => Navigator.of(context).pop()),
             // const SizedBox(height: 8),
             Expanded(
               child: GameWidget<PenaltyGame>(
@@ -62,12 +56,12 @@ class _PenaltyGameScreenState extends State<PenaltyGameScreen> {
                       ControlsOverlay(game: game),
                   PenaltyGame.goalOverlay: (ctx, game) =>
                       GoalNotifOverlay(game: game),
-                  PenaltyGame.resultOverlay: (ctx, game) =>
-                      ResultOverlay(game: game, onHome: () => Navigator.of(ctx).pop()),
+                  PenaltyGame.resultOverlay: (ctx, game) => ResultOverlay(
+                    game: game,
+                    onHome: () => Navigator.of(ctx).pop(),
+                  ),
                 },
-                initialActiveOverlays: const [
-                  PenaltyGame.controlsOverlay,
-                ],
+                initialActiveOverlays: const [PenaltyGame.controlsOverlay],
               ),
             ),
           ],
@@ -121,11 +115,7 @@ class GameHudBar extends StatelessWidget {
               //     ),
               //   ),
               // ),
-
-              ButtonArrow(
-                onPressed: onBack,
-                size:40
-              ),
+              ButtonArrow(onPressed: onBack, size: 40),
 
               const SizedBox(width: 10),
               _HudChip(
@@ -223,14 +213,16 @@ class GameHudBar extends StatelessWidget {
                   backgroundColor: Colors.transparent,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     progress >= 1.0
-                        ? const Color(0xFFFF6B35) // Orange-red for perfect score
+                        ? const Color(
+                            0xFFFF6B35,
+                          ) // Orange-red for perfect score
                         : progress >= 0.8
-                            ? const Color(0xFFFFD23F) // Gold for high score
-                            : progress >= 0.6
-                                ? const Color(0xFF06FFA5) // Bright green
-                                : progress >= 0.4
-                                    ? const Color(0xFF00D4FF) // Cyan
-                                    : const Color(0xFFFF0080), // Magenta for low score
+                        ? const Color(0xFFFFD23F) // Gold for high score
+                        : progress >= 0.6
+                        ? const Color(0xFF06FFA5) // Bright green
+                        : progress >= 0.4
+                        ? const Color(0xFF00D4FF) // Cyan
+                        : const Color(0xFFFF0080), // Magenta for low score
                   ),
                   minHeight: 8,
                 ),
@@ -581,6 +573,7 @@ class _ResultOverlayState extends State<ResultOverlay>
                 const SizedBox(height: 12),
                 Text(
                   isWin ? 'PERFECT SCORE!' : 'GAME OVER',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isWin
                         ? const Color(0xFFFFD700)
