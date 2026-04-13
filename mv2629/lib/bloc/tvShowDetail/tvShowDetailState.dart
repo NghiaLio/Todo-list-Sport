@@ -14,37 +14,21 @@ class TvShowDetailLoading extends TvShowDetailState {}
 class TvShowDetailLoaded extends TvShowDetailState {
   final TvDetail tvDetail;
   final List<TvShow> similarTvShows;
-  final bool isLoadingMore;
-  final bool hasReachedMax;
 
-  TvShowDetailLoaded({
-    required this.tvDetail,
-    required this.similarTvShows,
-    this.isLoadingMore = false,
-    this.hasReachedMax = false,
-  });
+  TvShowDetailLoaded({required this.tvDetail, required this.similarTvShows});
 
   TvShowDetailLoaded copyWith({
     TvDetail? tvDetail,
     List<TvShow>? similarTvShows,
-    bool? isLoadingMore,
-    bool? hasReachedMax,
   }) {
     return TvShowDetailLoaded(
       tvDetail: tvDetail ?? this.tvDetail,
       similarTvShows: similarTvShows ?? this.similarTvShows,
-      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
     );
   }
 
   @override
-  List<Object?> get props => [
-    tvDetail,
-    similarTvShows,
-    isLoadingMore,
-    hasReachedMax,
-  ];
+  List<Object?> get props => [tvDetail, similarTvShows];
 }
 
 class TvShowDetailError extends TvShowDetailState {

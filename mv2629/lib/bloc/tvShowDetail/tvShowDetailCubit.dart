@@ -12,8 +12,6 @@ class TvShowDetailCubit extends Cubit<TvShowDetailState> {
       super(TvShowDetailInitial());
 
   // ── Internal state ──────────────────────────────────────────────────────────
-  int _page = 1;
-  bool _isLoading = false;
   final Map<int, TvShow> _similarCache = {};
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -24,9 +22,7 @@ class TvShowDetailCubit extends Cubit<TvShowDetailState> {
 
   Future<void> getTvShowDetail(int id) async {
     emit(TvShowDetailLoading());
-    _page = 1;
     _similarCache.clear();
-    _isLoading = true;
     try {
       // 1. Get Video Trailer first as requested
       final videoTrailer = await tvShowDetailService.getTvShowVideoTrailer(id);
@@ -44,63 +40,21 @@ class TvShowDetailCubit extends Cubit<TvShowDetailState> {
       }
 
       // 3. Get First Page of Similar Shows
-      final similar = await tvShowDetailService.getSimilarTvShows(id, _page);
+      final similar = await tvShowDetailService.getSimilarTvShows(id, 1);
       if (similar != null) {
         for (var s in similar) {
           _similarCache[s.id] = s;
         }
-        if (similar.isNotEmpty) _page++;
       }
 
       emit(
         TvShowDetailLoaded(
           tvDetail: tvDetail,
           similarTvShows: _getSimilarList(),
-          hasReachedMax: similar?.isEmpty ?? true,
         ),
       );
     } catch (e) {
       emit(TvShowDetailError(message: 'Error: $e'));
-    } finally {
-      _isLoading = false;
-    }
-  }
-
-  Future<void> loadMoreSimilar(int id) async {
-    if (_isLoading) return;
-    final currentState = state;
-    if (currentState is! TvShowDetailLoaded || currentState.hasReachedMax) {
-      return;
-    }
-
-    _isLoading = true;
-    emit(currentState.copyWith(isLoadingMore: true));
-
-    try {
-      final similar = await tvShowDetailService.getSimilarTvShows(id, _page);
-      if (similar == null) {
-        emit(currentState.copyWith(isLoadingMore: false));
-        return;
-      }
-
-      for (var s in similar) {
-        _similarCache[s.id] = s;
-      }
-
-      final bool hasReachedMax = similar.isEmpty;
-      if (!hasReachedMax) _page++;
-
-      emit(
-        currentState.copyWith(
-          similarTvShows: _getSimilarList(),
-          isLoadingMore: false,
-          hasReachedMax: hasReachedMax,
-        ),
-      );
-    } catch (e) {
-      emit(currentState.copyWith(isLoadingMore: false));
-    } finally {
-      _isLoading = false;
     }
   }
 }

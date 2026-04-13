@@ -14,37 +14,21 @@ class MovieDetailLoading extends MovieDetailState {}
 class MovieDetailLoaded extends MovieDetailState {
   final MovieDetail movieDetail;
   final List<Movie> similarMovies;
-  final bool isLoadingMore;
-  final bool hasReachedMax;
 
-  MovieDetailLoaded({
-    required this.movieDetail,
-    required this.similarMovies,
-    this.isLoadingMore = false,
-    this.hasReachedMax = false,
-  });
+  MovieDetailLoaded({required this.movieDetail, required this.similarMovies});
 
   MovieDetailLoaded copyWith({
     MovieDetail? movieDetail,
     List<Movie>? similarMovies,
-    bool? isLoadingMore,
-    bool? hasReachedMax,
   }) {
     return MovieDetailLoaded(
       movieDetail: movieDetail ?? this.movieDetail,
       similarMovies: similarMovies ?? this.similarMovies,
-      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
     );
   }
 
   @override
-  List<Object?> get props => [
-    movieDetail,
-    similarMovies,
-    isLoadingMore,
-    hasReachedMax,
-  ];
+  List<Object?> get props => [movieDetail, similarMovies];
 }
 
 class MovieDetailError extends MovieDetailState {
