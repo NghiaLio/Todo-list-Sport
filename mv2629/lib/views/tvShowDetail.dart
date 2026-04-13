@@ -35,22 +35,9 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
   final ScrollController _similarScrollController = ScrollController();
 
   @override
-  void initState() {
-    super.initState();
-    _similarScrollController.addListener(_onSimilarScroll);
-  }
-
-  @override
   void dispose() {
     _similarScrollController.dispose();
     super.dispose();
-  }
-
-  void _onSimilarScroll() {
-    if (_similarScrollController.position.pixels >=
-        _similarScrollController.position.maxScrollExtent - 200) {
-      context.read<TvShowDetailCubit>().loadMoreSimilar(widget.tvShowId);
-    }
   }
 
   void _onRetry() {
@@ -58,7 +45,8 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
   }
 
   Future<void> _onPlayTrailer(String key) async {
-    final youtubeUrl = dotenv.env['BASE_URL_YOUTUBE'] ?? 'https://www.youtube.com/watch?v=';
+    final youtubeUrl =
+        dotenv.env['BASE_URL_YOUTUBE'] ?? 'https://www.youtube.com/watch?v=';
     final url = Uri.parse('$youtubeUrl$key');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
@@ -84,7 +72,8 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
         child: BlocBuilder<TvShowDetailCubit, TvShowDetailState>(
           buildWhen: (previous, current) {
             if (previous.runtimeType != current.runtimeType) return true;
-            if (previous is TvShowDetailLoaded && current is TvShowDetailLoaded) {
+            if (previous is TvShowDetailLoaded &&
+                current is TvShowDetailLoaded) {
               return previous.tvDetail != current.tvDetail;
             }
             return true;
@@ -103,8 +92,7 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
                 buildWhen: (previous, current) =>
                     current is TvShowDetailLoaded &&
                     (previous is! TvShowDetailLoaded ||
-                        previous.similarTvShows != current.similarTvShows ||
-                        previous.isLoadingMore != current.isLoadingMore),
+                        previous.similarTvShows != current.similarTvShows),
                 builder: (context, innerState) {
                   final loaded = innerState as TvShowDetailLoaded;
                   final tv = loaded.tvDetail;
@@ -123,9 +111,13 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
                       genres: tv.getGenres(),
                     ),
                     similarItems: loaded.similarTvShows
-                        .map((e) => MediaPosterItem(id: e.id, posterPath: e.posterPath))
+                        .map(
+                          (e) => MediaPosterItem(
+                            id: e.id,
+                            posterPath: e.posterPath,
+                          ),
+                        )
                         .toList(),
-                    isLoadingMore: loaded.isLoadingMore,
                     similarScrollController: _similarScrollController,
                     onBack: () => Navigator.of(context).pop(),
                     onPlayTrailer: () {

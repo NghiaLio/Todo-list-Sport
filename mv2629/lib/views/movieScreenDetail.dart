@@ -33,31 +33,16 @@ class __MovieScreenDetailViewState extends State<_MovieScreenDetailView> {
   final ScrollController _similarScrollController = ScrollController();
 
   @override
-  void initState() {
-    super.initState();
-    _similarScrollController.addListener(_onSimilarScroll);
-  }
-
-  @override
   void dispose() {
     _similarScrollController.dispose();
     super.dispose();
-  }
-
-  void _onSimilarScroll() {
-    if (_similarScrollController.position.pixels >=
-        _similarScrollController.position.maxScrollExtent - 200) {
-      context.read<MovieDetailCubit>().loadMoreSimilar(widget.movieId);
-    }
   }
 
   void _onRetry() {
     context.read<MovieDetailCubit>().getMovieDetail(widget.movieId);
   }
 
-  void _onPlayTrailer() {
-    
-  }
+  void _onPlayTrailer() {}
 
   void _onTapSimilarMovie(int id) {
     Navigator.push(
@@ -93,8 +78,7 @@ class __MovieScreenDetailViewState extends State<_MovieScreenDetailView> {
                 buildWhen: (previous, current) =>
                     current is MovieDetailLoaded &&
                     (previous is! MovieDetailLoaded ||
-                        previous.similarMovies != current.similarMovies ||
-                        previous.isLoadingMore != current.isLoadingMore),
+                        previous.similarMovies != current.similarMovies),
                 builder: (context, innerState) {
                   final loaded = innerState as MovieDetailLoaded;
                   final detail = loaded.movieDetail;
@@ -113,9 +97,13 @@ class __MovieScreenDetailViewState extends State<_MovieScreenDetailView> {
                       genres: detail.getGenres(),
                     ),
                     similarItems: loaded.similarMovies
-                        .map((e) => MediaPosterItem(id: e.id, posterPath: e.posterPath))
+                        .map(
+                          (e) => MediaPosterItem(
+                            id: e.id,
+                            posterPath: e.posterPath,
+                          ),
+                        )
                         .toList(),
-                    isLoadingMore: loaded.isLoadingMore,
                     similarScrollController: _similarScrollController,
                     onBack: () => Navigator.of(context).pop(),
                     onPlayTrailer: _onPlayTrailer,

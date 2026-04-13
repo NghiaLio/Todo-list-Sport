@@ -45,7 +45,6 @@ class MediaDetailContent extends StatelessWidget {
     super.key,
     required this.model,
     required this.similarItems,
-    required this.isLoadingMore,
     required this.similarScrollController,
     required this.onBack,
     required this.onPlayTrailer,
@@ -56,7 +55,6 @@ class MediaDetailContent extends StatelessWidget {
 
   final MediaDetailViewModel model;
   final List<MediaPosterItem> similarItems;
-  final bool isLoadingMore;
   final ScrollController similarScrollController;
   final VoidCallback onBack;
   final VoidCallback onPlayTrailer;
@@ -289,11 +287,8 @@ class MediaDetailContent extends StatelessWidget {
           child: ListView.builder(
             controller: similarScrollController,
             scrollDirection: Axis.horizontal,
-            itemCount: similarItems.length + (isLoadingMore ? 1 : 0),
+            itemCount: similarItems.length,
             itemBuilder: (context, index) {
-              if (index >= similarItems.length) {
-                return _buildSimilarLoadingIndicator();
-              }
               final item = similarItems[index];
               final imageUrl = ImageHelper.getImageUrl(item.posterPath ?? '');
               return GestureDetector(
@@ -345,23 +340,6 @@ class MediaDetailContent extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSimilarLoadingIndicator() {
-    return Container(
-      width: 100,
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        color: AppTheme.placeholderDarkColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: const Center(
-        child: CircularProgressIndicator(
-          color: AppTheme.primaryColor,
-          strokeWidth: 2,
-        ),
-      ),
     );
   }
 }
