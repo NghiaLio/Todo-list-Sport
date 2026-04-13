@@ -1,26 +1,25 @@
 // ignore_for_file: file_names
 
-import 'package:mv2629/bloc/sports/sportsState.dart';
+import '../../bloc/sports/sportsState.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/models/taskSportCard.dart';
-import 'package:mv2629/repo/implement/taskSportImp.dart';
-import 'package:mv2629/repo/taskSportRepo.dart';
-
+import '../../models/taskSportCard.dart';
+import '../../repo/implement/taskSportImp.dart';
+import '../../repo/taskSportRepo.dart';
 
 class SportsCubit extends Cubit<SportsState> {
-  final TaskSportRepo  _taskSportRepo = TaskSportService();
+  final TaskSportRepo _taskSportRepo = TaskSportService();
   SportsCubit() : super(SportsInitial());
 
   final List<TaskSportCardModel> _tasks = [];
   List<TaskSportCardModel> get tasks => _tasks;
 
-  Future<void> loadAllTasks() async{
+  Future<void> loadAllTasks() async {
     emit(SportsLoading());
     try {
       final result = await _taskSportRepo.getAllTaskSportCards();
       _tasks.clear();
       _tasks.addAll(result);
-      emit(SportsLoaded(_tasks));
+      emit(SportsLoaded(List.from(_tasks)));
     } catch (e) {
       emit(SportsError('Failed to load tasks: $e'));
     }

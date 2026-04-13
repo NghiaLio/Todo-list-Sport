@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
-import 'package:mv2629/models/taskTodoModel.dart';
-import 'package:mv2629/repo/taskTodoRepo.dart';
+import '../../models/taskTodoModel.dart';
+import '../../repo/taskTodoRepo.dart';
 import 'dart:collection';
 
 class TaskTodoService implements TaskTodoRepo {

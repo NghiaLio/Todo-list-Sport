@@ -4,15 +4,15 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:mv2629/bloc/todos/todosCubit.dart';
-import 'package:mv2629/bloc/todos/todosState.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/models/taskTodoModel.dart';
-import 'package:mv2629/views/addTaskCalendarScreen.dart';
-import 'package:mv2629/views/skeleton/calendar_task_skeleton.dart';
-import 'package:mv2629/widgets/custom_header.dart';
-import 'package:mv2629/widgets/task_content_card.dart';
-import 'package:mv2629/widgets/custom_floating_action_button.dart';
+import '../bloc/todos/todosCubit.dart';
+import '../bloc/todos/todosState.dart';
+import '../constants/theme.dart';
+import '../models/taskTodoModel.dart';
+import '../views/addTaskCalendarScreen.dart';
+import '../views/skeleton/calendar_task_skeleton.dart';
+import '../widgets/custom_header.dart';
+import '../widgets/task_content_card.dart';
+import '../widgets/custom_floating_action_button.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -81,6 +81,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
     await _todoCubit.refresh();
   }
 
+  Future<void> _navigateToEditTask(TaskTodoModel task) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            AddTaskCalendar(selectedDate: task.dateTime, task: task),
+      ),
+    );
+
+    if (!mounted) {
+      return;
+    }
+    await _todoCubit.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,6 +143,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       isLoadingTasks: _isLoadingTasks,
                       dayTasks: _dayTasks,
                       onRefresh: _fetchTasksForSelectedDate,
+                      onEditTask: _navigateToEditTask,
                     ),
                   ],
                 ),
@@ -142,7 +158,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-
 }
 
 class _CalendarWidget extends StatelessWidget {
@@ -198,17 +213,22 @@ class _CalendarWidget extends StatelessWidget {
                       Icons.chevron_right,
                       color: AppTheme.whiteColor,
                     ),
-                    controlsTextStyle: const TextStyle(
-                      color: AppTheme.whiteColor,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
-                    ),
-                    weekdayLabelTextStyle: const TextStyle(
-                      color: AppTheme.whiteColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
+                    controlsTextStyle: Theme.of(context)
+                        .textTheme
+                        .headlineMedium
+                        ?.copyWith(
+                          color: AppTheme.whiteColor,
+                          fontSize: 17,
+                          letterSpacing: 0.5,
+                        ),
+                    weekdayLabelTextStyle: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(
+                          color: AppTheme.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                     dayBuilder:
                         ({
                           required date,
@@ -279,10 +299,13 @@ class _CalendarWidget extends StatelessWidget {
                                     alignment: Alignment.center,
                                     child: Text(
                                       '${date.day}',
-                                      style: TextStyle(
-                                        color: numberColor,
-                                        fontSize: dayCircleSize * 0.39,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: numberColor,
+                                            fontSize: dayCircleSize * 0.39,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -307,11 +330,13 @@ class _TaskListWidget extends StatelessWidget {
   final bool isLoadingTasks;
   final List<TaskTodoModel>? dayTasks;
   final VoidCallback onRefresh;
+  final void Function(TaskTodoModel) onEditTask;
 
   const _TaskListWidget({
     required this.isLoadingTasks,
     this.dayTasks,
     required this.onRefresh,
+    required this.onEditTask,
   });
 
   @override
@@ -352,15 +377,18 @@ class _TaskListWidget extends StatelessWidget {
       itemCount: dayTasks!.length,
       itemBuilder: (context, index) {
         final task = dayTasks![index];
-        return TaskContentCard(
-          taskName: task.taskName,
-          content: task.content,
-          time: task.time,
-          isCompleted: task.isCompleted,
-          isRejected: false,
-          onConfirm: () =>
-              context.read<TaskTodoCubit>().toggleTaskCompletion(task),
-          onReject: () => context.read<TaskTodoCubit>().deleteTask(task.id),
+        return GestureDetector(
+          onTap: () => onEditTask(task),
+          child: TaskContentCard(
+            taskName: task.taskName,
+            content: task.content,
+            time: task.time,
+            isCompleted: task.isCompleted,
+            isRejected: false,
+            onConfirm: () =>
+                context.read<TaskTodoCubit>().toggleTaskCompletion(task),
+            onReject: () => context.read<TaskTodoCubit>().deleteTask(task.id),
+          ),
         );
       },
     );

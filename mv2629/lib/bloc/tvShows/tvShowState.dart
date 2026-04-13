@@ -1,9 +1,11 @@
-// d:\Lasbom-Dev\Project-dev\mv2629\lib\bloc\tvShows\tvShowState.dart
+import 'package:equatable/equatable.dart';
+import '../../models/filterTvShow.dart';
+import '../../models/tvShow.dart';
 
-import 'package:mv2629/models/filterTvShow.dart';
-import 'package:mv2629/models/tvShow.dart';
-
-abstract class TvShowState {}
+abstract class TvShowState extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
 
 class TvShowInitial extends TvShowState {}
 
@@ -36,9 +38,20 @@ class TvShowLoaded extends TvShowState {
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    tvShows,
+    activeFilter,
+    isLoadingMore,
+    hasReachedMax,
+  ];
 }
 
 class TvShowError extends TvShowState {
   final String message;
   TvShowError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
 }

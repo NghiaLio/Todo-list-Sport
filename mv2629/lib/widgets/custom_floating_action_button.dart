@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mv2629/constants/theme.dart';
+import '../constants/theme.dart';
 
 class CustomFloatingActionButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const CustomFloatingActionButton({
-    super.key,
-    required this.onPressed,
-  });
+  const CustomFloatingActionButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

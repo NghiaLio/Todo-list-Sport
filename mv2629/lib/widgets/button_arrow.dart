@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:mv2629/constants/theme.dart';
+import '../constants/theme.dart';
 
 class ButtonArrow extends StatelessWidget {
   final VoidCallback? onPressed;

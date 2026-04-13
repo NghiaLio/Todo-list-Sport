@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use, file_names
 
 import 'package:flutter/material.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/widgets/button_arrow.dart';
+import '../constants/theme.dart';
+import '../widgets/button_arrow.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -17,30 +17,28 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.primaryColor,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Phần trên: Illustrations
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: const _IllustrationWidget(),
-            ),
+      body: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 80),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const _IllustrationWidget(),
+              const SizedBox(height: 48),
+              const _TextContentWidget(),
+              const SizedBox(height: 40),
+              ButtonArrow(
+                onPressed: () => _navigateToHome(context),
+                iconAsset: 'assets/rightArrow.png',
+                size: 69,
+              ),
+            ],
           ),
-          // Phần giữa: Text content
-          const _TextContentWidget(),
-          SizedBox(height: 60),
-          ButtonArrow(
-            onPressed: () => _navigateToHome(context),
-            iconAsset: 'assets/rightArrow.png',
-            size: 69,
-          ),
-          SizedBox(height: 40),
-        ],
+        ),
       ),
     );
   }
-
 }
 
 class _IllustrationWidget extends StatelessWidget {

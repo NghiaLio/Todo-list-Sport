@@ -1,8 +1,10 @@
-// ignore_for_file: file_names
+import 'package:equatable/equatable.dart';
+import '../../models/taskTodoModel.dart';
 
-import 'package:mv2629/models/taskTodoModel.dart';
-
-abstract class TodoTaskState {}
+abstract class TodoTaskState extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
 
 class TodoTaskInitial extends TodoTaskState {}
 
@@ -61,10 +63,27 @@ class TodoTaskLoaded extends TodoTaskState {
       newestFirst: newestFirst ?? this.newestFirst,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    tasks,
+    taskDateKeys,
+    completionRate,
+    page,
+    pageSize,
+    totalCount,
+    hasNextPage,
+    isLoadingMore,
+    selectedDate,
+    newestFirst,
+  ];
 }
 
 class TodoTaskError extends TodoTaskState {
   final String message;
 
   TodoTaskError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
 }

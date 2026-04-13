@@ -83,5 +83,4 @@ class ApiService {
       throw Exception(e.message);
     }
   }
-  
 }

@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:equatable/equatable.dart';
-import 'package:mv2629/models/taskSportCard.dart';
+import '../models/taskSportCard.dart';
 
 class FilterTvShow extends Equatable {
   final double? minRating;
@@ -22,13 +22,13 @@ class FilterTvShow extends Equatable {
 
   @override
   List<Object?> get props => [
-        minRating,
-        maxRating,
-        fromYear,
-        toYear,
-        sportType,
-        sportKeyword,
-      ];
+    minRating,
+    maxRating,
+    fromYear,
+    toYear,
+    sportType,
+    sportKeyword,
+  ];
 
   bool get isEmpty =>
       minRating == null &&
@@ -58,8 +58,9 @@ class FilterTvShow extends Equatable {
       fromYear: clearFromYear ? null : (fromYear ?? this.fromYear),
       toYear: clearToYear ? null : (toYear ?? this.toYear),
       sportType: clearSportType ? null : (sportType ?? this.sportType),
-      sportKeyword:
-          clearSportKeyword ? null : (sportKeyword ?? this.sportKeyword),
+      sportKeyword: clearSportKeyword
+          ? null
+          : (sportKeyword ?? this.sportKeyword),
     );
   }
 }

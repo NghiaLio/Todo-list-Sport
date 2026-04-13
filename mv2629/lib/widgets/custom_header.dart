@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/widgets/button_arrow.dart';
+import '../constants/theme.dart';
+import '../widgets/button_arrow.dart';
 
 class CustomHeader extends StatelessWidget {
   final String title;

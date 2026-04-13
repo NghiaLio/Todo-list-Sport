@@ -1,17 +1,17 @@
 // d:\Lasbom-Dev\Project-dev\mv2629\lib\bloc\tvShows\tvShowCubit.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/tvShows/tvShowState.dart';
-import 'package:mv2629/models/filterTvShow.dart';
-import 'package:mv2629/models/tvShow.dart';
-import 'package:mv2629/repo/implement/tvShowImp.dart';
+import '../../bloc/tvShows/tvShowState.dart';
+import '../../models/filterTvShow.dart';
+import '../../models/tvShow.dart';
+import '../../repo/implement/tvShowImp.dart';
 
 class TvShowCubit extends Cubit<TvShowState> {
   final TvShowService tvShowService;
 
   TvShowCubit({TvShowService? service})
-      : tvShowService = service ?? TvShowService(),
-        super(TvShowInitial());
+    : tvShowService = service ?? TvShowService(),
+      super(TvShowInitial());
 
   // ── Internal state ──────────────────────────────────────────────────────────
   /// Raw results from API, keyed by id to avoid duplicates.
@@ -30,13 +30,12 @@ class TvShowCubit extends Cubit<TvShowState> {
   TvShowLoaded _buildLoaded({
     bool isLoadingMore = false,
     bool hasReachedMax = false,
-  }) =>
-      TvShowLoaded(
-        tvShows: _applyAll(),
-        activeFilter: _filter,
-        isLoadingMore: isLoadingMore,
-        hasReachedMax: hasReachedMax,
-      );
+  }) => TvShowLoaded(
+    tvShows: _applyAll(),
+    activeFilter: _filter,
+    isLoadingMore: isLoadingMore,
+    hasReachedMax: hasReachedMax,
+  );
 
   // ── Public API ───────────────────────────────────────────────────────────────
 
@@ -109,7 +108,7 @@ class TvShowCubit extends Cubit<TvShowState> {
       if (results == null) {
         // API error
         if (isFirstPage) {
-          emit(TvShowError(message: 'Không tìm thấy dữ liệu'));
+          emit(TvShowError(message: 'No data found'));
         } else if (state is TvShowLoaded) {
           emit(_buildLoaded(isLoadingMore: false));
         }
@@ -125,7 +124,7 @@ class TvShowCubit extends Cubit<TvShowState> {
 
       emit(_buildLoaded(hasReachedMax: hasReachedMax));
     } catch (e) {
-      emit(TvShowError(message: 'Lỗi kết nối hệ thống: $e'));
+      emit(TvShowError(message: 'System connection error: $e'));
     } finally {
       _isLoading = false;
     }

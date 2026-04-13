@@ -2,17 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/todos/todosCubit.dart';
-import 'package:mv2629/models/taskTodoModel.dart';
-import 'package:mv2629/constants/theme.dart';
-import 'package:mv2629/utils/id_generator.dart';
-import 'package:mv2629/widgets/custom_header.dart';
-import 'package:mv2629/widgets/showSnackBar.dart';
+import '../bloc/todos/todosCubit.dart';
+import '../models/taskTodoModel.dart';
+import '../constants/theme.dart';
+import '../utils/id_generator.dart';
+import '../widgets/custom_header.dart';
+import '../widgets/showSnackBar.dart';
 
 class AddTaskCalendar extends StatefulWidget {
   final DateTime selectedDate;
+  final TaskTodoModel? task;
 
-  AddTaskCalendar({super.key, DateTime? selectedDate})
+  AddTaskCalendar({super.key, DateTime? selectedDate, this.task})
     : selectedDate = selectedDate ?? DateTime.now();
 
   @override
@@ -63,20 +64,36 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
       minute,
     );
 
-    final todo = TaskTodoModel(
-      id: IdGenerator.generateID(),
-      taskName: taskName,
-      content: content,
-      time: _formatDisplayTime(hour, minute, _period),
-      isCompleted: false,
-      dateTime: taskDateTime,
-    );
+    final displayTime = _formatDisplayTime(hour, minute, _period);
 
-    await context.read<TaskTodoCubit>().addTask(todo);
+    // Check if editing or creating
+    if (widget.task != null) {
+      // Edit mode - update existing task
+      final updatedTodo = widget.task!.copyWith(
+        taskName: taskName,
+        content: content,
+        time: displayTime,
+        dateTime: taskDateTime,
+      );
+      await context.read<TaskTodoCubit>().updateTask(updatedTodo);
+      _showMessage('Task updated successfully', type: SnackBarType.success);
+    } else {
+      // Create mode - add new task
+      final todo = TaskTodoModel(
+        id: IdGenerator.generateID(),
+        taskName: taskName,
+        content: content,
+        time: displayTime,
+        isCompleted: false,
+        dateTime: taskDateTime,
+      );
+      await context.read<TaskTodoCubit>().addTask(todo);
+      _showMessage('Task created successfully', type: SnackBarType.success);
+    }
+
     if (!mounted) {
       return;
     }
-    _showMessage('Task created successfully', type: SnackBarType.success);
     Navigator.pop(context);
   }
 
@@ -105,11 +122,6 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
     super.initState();
     _selectedDate = widget.selectedDate;
 
-    final hour24 = _selectedDate.hour;
-    final minute = _selectedDate.minute;
-    final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
-
-    _period = hour24 >= 12 ? 'PM' : 'AM';
     _tabController = TabController(length: tabIcons.length, vsync: this);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging || !_tabController.indexIsChanging) {
@@ -117,12 +129,35 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
       }
     });
 
-    _taskNameController = TextEditingController(text: 'Name Task');
-    _hourController = TextEditingController(text: hour12.toString());
-    _minuteController = TextEditingController(
-      text: minute.toString().padLeft(2, '0'),
-    );
-    _contentController = TextEditingController();
+    if (widget.task != null) {
+      // Edit mode - populate with existing task data
+      _taskNameController = TextEditingController(text: widget.task!.taskName);
+      _contentController = TextEditingController(text: widget.task!.content);
+
+      final taskDateTime = widget.task!.dateTime;
+      final hour24 = taskDateTime?.hour ?? 0;
+      final minute = taskDateTime?.minute ?? 0;
+      final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
+
+      _period = hour24 >= 12 ? 'PM' : 'AM';
+      _hourController = TextEditingController(text: hour12.toString());
+      _minuteController = TextEditingController(
+        text: minute.toString().padLeft(2, '0'),
+      );
+    } else {
+      // Create mode - use default values
+      final hour24 = _selectedDate.hour;
+      final minute = _selectedDate.minute;
+      final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
+
+      _period = hour24 >= 12 ? 'PM' : 'AM';
+      _taskNameController = TextEditingController(text: 'Name Task');
+      _hourController = TextEditingController(text: hour12.toString());
+      _minuteController = TextEditingController(
+        text: minute.toString().padLeft(2, '0'),
+      );
+      _contentController = TextEditingController();
+    }
   }
 
   @override
@@ -194,7 +229,6 @@ class _AddTaskCalendarState extends State<AddTaskCalendar>
       ),
     );
   }
-
 }
 
 class _TaskNameTabWidget extends StatelessWidget {
@@ -214,11 +248,9 @@ class _TaskNameTabWidget extends StatelessWidget {
           TextField(
             controller: taskNameController,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.greyColor,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.displaySmall?.copyWith(color: AppTheme.greyColor),
             decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
@@ -239,9 +271,11 @@ class _TaskNameTabWidget extends StatelessWidget {
               controller: contentController,
               maxLines: null,
               style: Theme.of(context).textTheme.bodyMedium,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Start writing here.....',
-                hintStyle: TextStyle(color: AppTheme.black54Color),
+                hintStyle: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: AppTheme.black54Color),
                 border: InputBorder.none,
               ),
             ),
@@ -289,7 +323,7 @@ class _TimeTabWidget extends StatelessWidget {
               controller: hourController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
                 fontSize: 48,
                 color: AppTheme.primaryColor,
               ),
@@ -299,11 +333,13 @@ class _TimeTabWidget extends StatelessWidget {
               },
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
               ':',
-              style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.displayLarge?.copyWith(fontSize: 48),
             ),
           ),
           // Minute
@@ -319,7 +355,7 @@ class _TimeTabWidget extends StatelessWidget {
               controller: minuteController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
                 fontSize: 48,
                 color: AppTheme.black87Color,
               ),
@@ -357,7 +393,7 @@ class _TimeTabWidget extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         'AM',
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: period == 'AM'
                               ? AppTheme.primaryColor
                               : AppTheme.greyColor,
@@ -385,7 +421,7 @@ class _TimeTabWidget extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         'PM',
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: period == 'PM'
                               ? AppTheme.primaryColor
                               : AppTheme.greyColor,
@@ -408,10 +444,7 @@ class _TabBarWidget extends StatelessWidget {
   final TabController tabController;
   final List<IconData> tabIcons;
 
-  const _TabBarWidget({
-    required this.tabController,
-    required this.tabIcons,
-  });
+  const _TabBarWidget({required this.tabController, required this.tabIcons});
 
   @override
   Widget build(BuildContext context) {

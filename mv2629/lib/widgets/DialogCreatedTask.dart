@@ -1,20 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mv2629/constants/theme.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import '../constants/theme.dart';
+import '../models/taskSportCard.dart';
 
 class MatchDialog extends StatefulWidget {
-  const MatchDialog({super.key});
+  final TaskSportCardModel? task;
+
+  const MatchDialog({super.key, this.task});
 
   @override
   State<MatchDialog> createState() => _MatchDialogState();
 }
 
 class _MatchDialogState extends State<MatchDialog> {
-  final _timeController = TextEditingController(text: '00:00');
-  final _scoreController = TextEditingController(text: '00-00');
-  final _locationController = TextEditingController(
-    text: 'My Dinh basketball court',
-  );
+  late final TextEditingController _timeController;
+  late final TextEditingController _scoreController;
+  late final TextEditingController _locationController;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.task != null) {
+      // Edit mode - populate with existing task data
+      _timeController = TextEditingController(text: widget.task!.time);
+      _scoreController = TextEditingController(text: widget.task!.scored);
+      _locationController = TextEditingController(text: widget.task!.location);
+    } else {
+      // Create mode - use default values
+      _timeController = TextEditingController(text: '00:00');
+      _scoreController = TextEditingController(text: '00-00');
+      _locationController = TextEditingController(
+        text: 'My Dinh basketball court',
+      );
+    }
+  }
 
   bool _isValidTimeFormat(String value) {
     return RegExp(r'^(?:[0-1]?\d|2[0-3]):(?:[0-5]?\d)$').hasMatch(value);
@@ -52,11 +72,16 @@ class _MatchDialogState extends State<MatchDialog> {
       return;
     }
 
+    // Determine action based on whether this is edit or create mode
+    final action = widget.task != null ? 'update' : 'create';
+
     Navigator.pop(context, {
       'status': 'success',
+      'action': action,
       'time': timeValue,
       'scored': scoreValue,
       'location': locationValue,
+      if (widget.task != null) 'taskId': widget.task!.id,
     });
   }
 
@@ -99,7 +124,7 @@ class _MatchDialogState extends State<MatchDialog> {
               _buildInfoCard(
                 label: 'Time',
                 controller: _timeController,
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.numberWithOptions(signed: true),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9:]')),
                   LengthLimitingTextInputFormatter(5),
@@ -109,7 +134,7 @@ class _MatchDialogState extends State<MatchDialog> {
               _buildInfoCard(
                 label: 'Scored',
                 controller: _scoreController,
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.numberWithOptions(signed: true),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9\-]')),
                   LengthLimitingTextInputFormatter(5),
@@ -172,7 +197,12 @@ class _MatchDialogState extends State<MatchDialog> {
 
   Widget _buildSaveButton() {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.3,
+      width: getValueForScreenType<double>(
+        context: context,
+        mobile: MediaQuery.of(context).size.width * 0.3,
+        tablet: MediaQuery.of(context).size.width * 0.2,
+        desktop: MediaQuery.of(context).size.width * 0.15,
+      ),
       child: ElevatedButton(
         onPressed: _onSave,
         style: ElevatedButton.styleFrom(
@@ -201,7 +231,12 @@ class _MatchDialogState extends State<MatchDialog> {
     List<TextInputFormatter>? inputFormatters,
   }) {
     return Container(
-      width: 80, // Tăng width một chút cho vừa TextField
+      width: getValueForScreenType<double>(
+        context: context,
+        mobile: 90,
+        tablet: 120,
+        desktop: 130,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
         color: AppTheme.primaryColor,
@@ -210,17 +245,15 @@ class _MatchDialogState extends State<MatchDialog> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                label,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
+          Center(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
               ),
-            ],
+              textAlign: TextAlign.center,
+            ),
           ),
           const SizedBox(height: 2),
           SizedBox(

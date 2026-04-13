@@ -1,37 +1,21 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mv2629/models/filterTvShow.dart';
-import 'package:mv2629/models/taskSportCard.dart';
-import 'package:mv2629/models/tvShow.dart';
-import 'package:mv2629/repo/dioClient.dart';
-import 'package:mv2629/repo/tvShowRepo.dart';
+import '../../models/filterTvShow.dart';
+import '../../models/taskSportCard.dart';
+import '../../models/tvShow.dart';
+import '../../repo/dioClient.dart';
+import '../../repo/tvShowRepo.dart';
 
 class TvShowService implements TvShowRepo {
   final ApiService dio;
-  final String discoveryUrl;
   final String searchUrl;
 
-  TvShowService({
-    ApiService? apiService,
-    String? discoveryUrl,
-    String? searchUrl,
-  })  : dio = apiService ?? ApiService(),
-        discoveryUrl = discoveryUrl ?? dotenv.env['BASE_URL_DISCOVERY'] ?? "",
-        searchUrl = searchUrl ?? dotenv.env['BASE_URL_SEARCH'] ?? "";
+  TvShowService({ApiService? apiService, String? searchUrl})
+    : dio = apiService ?? ApiService(),
+      searchUrl = searchUrl ?? dotenv.env['BASE_URL_SEARCH_TV'] ?? "";
 
   @override
   Future<List<TvShow>?> discoverTv(int page) async {
-    try {
-      final res = await dio.get(
-        discoveryUrl,
-        queryParameters: {'with_genres': '99,10764', 'page': page},
-      );
-
-      return (res.data['results'] as List)
-          .map((e) => TvShow.fromJson(e))
-          .toList();
-    } catch (e) {
-      return null;
-    }
+    return searchTv('sport', page);
   }
 
   @override

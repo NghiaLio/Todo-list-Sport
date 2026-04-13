@@ -21,14 +21,14 @@ class TvShow extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        overview,
-        genreIds,
-        posterPath,
-        voteAverage,
-        firstAirDate,
-      ];
+    id,
+    name,
+    overview,
+    genreIds,
+    posterPath,
+    voteAverage,
+    firstAirDate,
+  ];
 
   TvShow copyWith({
     int? id,

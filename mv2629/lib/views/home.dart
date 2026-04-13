@@ -1,9 +1,10 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mv2629/bloc/todos/todosCubit.dart';
-import 'package:mv2629/bloc/todos/todosState.dart';
-import 'package:mv2629/constants/theme.dart';
+import '../bloc/todos/todosCubit.dart';
+import '../bloc/todos/todosState.dart';
+import '../constants/theme.dart';
 import '../widgets/button_arrow.dart';
 
 class Home extends StatefulWidget {
@@ -31,28 +32,40 @@ class _HomeState extends State<Home> {
       backgroundColor: AppTheme.grey100Color,
       drawer: _DrawerWidget(onNavigate: _navigateFromDrawer),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // AppBar
-              _AppBarWidget(
-                onOpenDrawer: () => _scaffoldKey.currentState?.openDrawer(),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // AppBar
+                      _AppBarWidget(
+                        onOpenDrawer: () =>
+                            _scaffoldKey.currentState?.openDrawer(),
+                      ),
+                      // Welcome Box
+                      const _WelcomeTextWidget(),
+
+                      const Spacer(),
+
+                      // Sports Card
+                      _SportsCardWidget(onTap: _navigateToListSportTask),
+
+                      const SizedBox(height: 16),
+
+                      // To Do List Card
+                      _TodoCardWidget(onTap: _navigateToTodoScreen),
+
+                      const Spacer(flex: 2),
+                    ],
+                  ),
+                ),
               ),
-              // Welcome Box
-              const _WelcomeTextWidget(),
-
-              SizedBox(height: 32),
-
-              // Sports Card
-              _SportsCardWidget(onTap: _navigateToListSportTask),
-
-              SizedBox(height: 16),
-
-              // To Do List Card
-              _TodoCardWidget(onTap: _navigateToTodoScreen),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -64,7 +77,6 @@ class _HomeState extends State<Home> {
       Navigator.pushNamed(context, routeName);
     }
   }
-
 }
 
 class _AppBarWidget extends StatelessWidget {
@@ -78,7 +90,21 @@ class _AppBarWidget extends StatelessWidget {
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: IconButton(
-        icon: Image.asset('assets/iconDrawer.png', width: 24, height: 24),
+        icon: Image.asset(
+          'assets/iconDrawer.png',
+          width: getValueForScreenType<double>(
+            context: context,
+            mobile: 24,
+            tablet: 40,
+            desktop: 24,
+          ),
+          height: getValueForScreenType<double>(
+            context: context,
+            mobile: 24,
+            tablet: 40,
+            desktop: 24,
+          ),
+        ),
         onPressed: onOpenDrawer,
       ),
     );
@@ -142,6 +168,13 @@ class _DrawerWidget extends StatelessWidget {
             label: 'Statistical',
             isSelected: false,
             onTap: () => onNavigate('/statistical'),
+          ),
+
+          _CustomDrawerItem(
+            icon: Icons.sports_esports,
+            label: 'Game',
+            isSelected: false,
+            onTap: () => onNavigate('/game'),
           ),
           _CustomDrawerItem(
             icon: Icons.settings,
@@ -241,7 +274,14 @@ class _SportsCardWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         width: double.infinity,
-        height: 250,
+        height: getValueForScreenType<double>(
+          context: context,
+          mobile: 250,
+          tablet: MediaQuery.of(context).orientation == Orientation.portrait
+              ? 350
+              : 250,
+          desktop: 300,
+        ),
         decoration: BoxDecoration(
           image: const DecorationImage(
             image: AssetImage('assets/Rectangle 474.png'),
@@ -252,10 +292,24 @@ class _SportsCardWidget extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Center(
-                child: Image.asset('assets/logo.png', width: 91, height: 91),
+                child: Image.asset(
+                  'assets/logo.png',
+                  width: getValueForScreenType<double>(
+                    context: context,
+                    mobile: 91,
+                    tablet: 120,
+                    desktop: 91,
+                  ),
+                  height: getValueForScreenType<double>(
+                    context: context,
+                    mobile: 91,
+                    tablet: 120,
+                    desktop: 91,
+                  ),
+                ),
               ),
               Text(
                 'Sports',
@@ -301,7 +355,15 @@ class _TodoCardWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
               width: double.infinity,
-              height: 250,
+              height: getValueForScreenType<double>(
+                context: context,
+                mobile: 250,
+                tablet:
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                    ? 350
+                    : 250,
+                desktop: 300,
+              ),
               decoration: BoxDecoration(
                 image: const DecorationImage(
                   image: AssetImage('assets/Rectangle 473.png'),
@@ -315,46 +377,54 @@ class _TodoCardWidget extends StatelessWidget {
                   vertical: 32,
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(
                       'To Do List',
                       style: Theme.of(context).textTheme.displayMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 110,
-                                    height: 110,
-                                    child: CircularProgressIndicator(
-                                      value: completionRate,
-                                      strokeWidth: 8,
-                                      valueColor: const AlwaysStoppedAnimation(
-                                        AppTheme.whiteColor,
-                                      ),
-                                      backgroundColor: AppTheme.white20Color,
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SizedBox(
+                                  width: getValueForScreenType<double>(
+                                    context: context,
+                                    mobile: 110,
+                                    tablet: 150,
+                                    desktop: 130,
+                                  ),
+                                  height: getValueForScreenType<double>(
+                                    context: context,
+                                    mobile: 110,
+                                    tablet: 150,
+                                    desktop: 130,
+                                  ),
+                                  child: CircularProgressIndicator(
+                                    value: completionRate,
+                                    strokeWidth: 8,
+                                    valueColor: const AlwaysStoppedAnimation(
+                                      AppTheme.whiteColor,
                                     ),
+                                    backgroundColor: AppTheme.white20Color,
                                   ),
-                                  Text(
-                                    '$completed/$total',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .displayLarge
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+                                ),
+                                Text(
+                                  '$completed/$total',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displayLarge
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox.shrink(),
