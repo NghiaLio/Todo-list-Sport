@@ -96,7 +96,7 @@ class __TvShowDetailViewState extends State<_TvShowDetailView> {
                 builder: (context, innerState) {
                   final loaded = innerState as TvShowDetailLoaded;
                   final tv = loaded.tvDetail;
-
+ 
                   return MediaDetailContent(
                     model: MediaDetailViewModel(
                       name: tv.name,
