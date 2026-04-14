@@ -1,9 +1,9 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../constants/app_config.dart';
 
 class ImageHelper {
   static String getImageUrl(String? path) {
     if (path == null) return '';
-    final basePath = dotenv.env['BASE_URL_IMAGE'] ?? "";
+    final basePath = AppConfig.baseUrlImage;
     return '$basePath$path';
   }
 }

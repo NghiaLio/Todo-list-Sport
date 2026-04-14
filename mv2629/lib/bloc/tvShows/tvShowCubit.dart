@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/tvShows/tvShowState.dart';
 import '../../models/filterTvShow.dart';
 import '../../models/tvShow.dart';
+import '../../repo/dioClient.dart';
 import '../../repo/implement/tvShowImp.dart';
 
 class TvShowCubit extends Cubit<TvShowState> {
@@ -19,6 +20,7 @@ class TvShowCubit extends Cubit<TvShowState> {
   int _page = 1;
   String _keyword = '';
   bool _isLoading = false;
+  int _requestSequence = 0;
   FilterTvShow _filter = const FilterTvShow();
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -75,6 +77,15 @@ class TvShowCubit extends Cubit<TvShowState> {
     await _fetchPage(isFirstPage: true);
   }
 
+  /// Retry first page for current keyword regardless of current state.
+  Future<void> retry() async {
+    if (_isLoading) return;
+    _page = 1;
+    _cache.clear();
+    emit(TvShowLoading());
+    await _fetchPage(isFirstPage: true);
+  }
+
   /// Filter only – never triggers an API call; re-applies on existing cache.
   void updateFilter(FilterTvShow newFilter) {
     if (_filter == newFilter) return;
@@ -92,7 +103,29 @@ class TvShowCubit extends Cubit<TvShowState> {
 
   // ── Private ──────────────────────────────────────────────────────────────────
 
+  String _mapErrorMessage(Object e) {
+    if (e is ApiException) {
+      final code = e.statusCode;
+      if (code == 401 || code == 403) {
+        return 'Unauthorized request. Please check API configuration.';
+      }
+      if (code == 404) {
+        return 'No data found.';
+      }
+      if (code != null && code >= 500) {
+        return 'Server error. Please try again later.';
+      }
+      final data = e.data;
+      if (data is Map && data['status_message'] is String) {
+        return data['status_message'] as String;
+      }
+      return 'Request failed${code != null ? ' ($code)' : ''}.';
+    }
+    return 'System connection error: $e';
+  }
+
   Future<void> _fetchPage({required bool isFirstPage}) async {
+    final requestId = ++_requestSequence;
     _isLoading = true;
 
     // If data already exists, show "loading more" spinner inline.
@@ -105,8 +138,11 @@ class TvShowCubit extends Cubit<TvShowState> {
           ? await tvShowService.discoverTv(_page)
           : await tvShowService.searchTv(_keyword, _page);
 
+      if (requestId != _requestSequence) {
+        return;
+      }
+
       if (results == null) {
-        // API error
         if (isFirstPage) {
           emit(TvShowError(message: 'No data found'));
         } else if (state is TvShowLoaded) {
@@ -124,9 +160,14 @@ class TvShowCubit extends Cubit<TvShowState> {
 
       emit(_buildLoaded(hasReachedMax: hasReachedMax));
     } catch (e) {
-      emit(TvShowError(message: 'System connection error: $e'));
+      if (requestId != _requestSequence) {
+        return;
+      }
+      emit(TvShowError(message: _mapErrorMessage(e)));
     } finally {
-      _isLoading = false;
+      if (requestId == _requestSequence) {
+        _isLoading = false;
+      }
     }
   }
 }

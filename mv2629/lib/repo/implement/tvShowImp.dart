@@ -1,4 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../constants/app_config.dart';
 import '../../models/filterTvShow.dart';
 import '../../models/taskSportCard.dart';
 import '../../models/tvShow.dart';
@@ -11,7 +11,7 @@ class TvShowService implements TvShowRepo {
 
   TvShowService({ApiService? apiService, String? searchUrl})
     : dio = apiService ?? ApiService(),
-      searchUrl = searchUrl ?? dotenv.env['BASE_URL_SEARCH_TV'] ?? "";
+      searchUrl = searchUrl ?? AppConfig.baseUrlSearchTv;
 
   @override
   Future<List<TvShow>?> discoverTv(int page) async {
@@ -20,18 +20,14 @@ class TvShowService implements TvShowRepo {
 
   @override
   Future<List<TvShow>?> searchTv(String query, int page) async {
-    try {
-      final res = await dio.get(
-        searchUrl,
-        queryParameters: {'query': query, 'page': page},
-      );
+    final res = await dio.get(
+      searchUrl,
+      queryParameters: {'query': query, 'page': page},
+    );
 
-      return (res.data['results'] as List)
-          .map((e) => TvShow.fromJson(e))
-          .toList();
-    } catch (e) {
-      return null;
-    }
+    return (res.data['results'] as List)
+        .map((e) => TvShow.fromJson(e))
+        .toList();
   }
 
   @override

@@ -81,15 +81,15 @@ class _TvscreenState extends State<Tvscreen> {
         ),
         onApply: (newFilter) {
           context.read<TvShowCubit>().updateFilter(
-                FilterTvShow(
-                  minRating: newFilter.minRating,
-                  maxRating: newFilter.maxRating,
-                  fromYear: newFilter.fromYear,
-                  toYear: newFilter.toYear,
-                  sportType: newFilter.sportType,
-                  sportKeyword: newFilter.sportKeyword,
-                ),
-              );
+            FilterTvShow(
+              minRating: newFilter.minRating,
+              maxRating: newFilter.maxRating,
+              fromYear: newFilter.fromYear,
+              toYear: newFilter.toYear,
+              sportType: newFilter.sportType,
+              sportKeyword: newFilter.sportKeyword,
+            ),
+          );
         },
         onClear: () => context.read<TvShowCubit>().clearFilter(),
       ),
@@ -111,8 +111,9 @@ class _TvscreenState extends State<Tvscreen> {
               return false;
             },
             builder: (context, state) {
-              final activeFilter =
-                  state is TvShowLoaded ? state.activeFilter : const FilterTvShow();
+              final activeFilter = state is TvShowLoaded
+                  ? state.activeFilter
+                  : const FilterTvShow();
               return MediaSearchAndFilterBar(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
@@ -172,7 +173,7 @@ class _TvscreenState extends State<Tvscreen> {
                 if (state is TvShowError) {
                   return MediaErrorView(
                     message: state.message,
-                    onRetry: () => context.read<TvShowCubit>().init(),
+                    onRetry: () => context.read<TvShowCubit>().retry(),
                   );
                 }
                 return const SizedBox.shrink();
@@ -204,8 +205,12 @@ class _TvscreenState extends State<Tvscreen> {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: getValueForScreenType<int>(
           context: context,
-          mobile: MediaQuery.of(context).orientation == Orientation.portrait ? 3 : 5,
-          tablet: MediaQuery.of(context).orientation == Orientation.portrait ? 4 : 5,
+          mobile: MediaQuery.of(context).orientation == Orientation.portrait
+              ? 3
+              : 5,
+          tablet: MediaQuery.of(context).orientation == Orientation.portrait
+              ? 4
+              : 5,
           desktop: 6,
         ),
         childAspectRatio: getValueForScreenType<double>(
@@ -278,14 +283,18 @@ class _TvShowCard extends StatelessWidget {
                           imageUrl: imageUrl,
                           fit: BoxFit.cover,
                           placeholder: (_, _) => const ImageSkeleton(),
-                          errorWidget: (_, _, _) => const Icon(Icons.broken_image),
+                          errorWidget: (_, _, _) =>
+                              const Icon(Icons.broken_image),
                         )
                       : const Icon(Icons.tv),
                 ),
               ),
               Container(
                 color: AppTheme.primaryColor,
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 10.0,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -303,15 +312,20 @@ class _TvShowCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.star_rounded, color: Colors.amber, size: 12),
+                        const Icon(
+                          Icons.star_rounded,
+                          color: Colors.amber,
+                          size: 12,
+                        ),
                         const SizedBox(width: 2),
                         Text(
                           show.voteAverage.toStringAsFixed(1),
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.whiteColor,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: AppTheme.whiteColor,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
                         const Spacer(),
                         const Icon(
@@ -321,13 +335,15 @@ class _TvShowCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 2),
                         Text(
-                          (show.firstAirDate != null && show.firstAirDate!.length >= 4)
+                          (show.firstAirDate != null &&
+                                  show.firstAirDate!.length >= 4)
                               ? show.firstAirDate!.substring(0, 4)
                               : 'N/A',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.whiteColor,
-                            fontSize: 10,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: AppTheme.whiteColor,
+                                fontSize: 10,
+                              ),
                         ),
                       ],
                     ),

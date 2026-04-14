@@ -1,4 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../constants/app_config.dart';
 import '../../models/filterMovie.dart';
 import '../../models/taskSportCard.dart';
 import '../../models/movie.dart';
@@ -11,7 +11,7 @@ class MovieService implements MovieRepo {
 
   MovieService({ApiService? apiService, String? searchUrl})
     : dio = apiService ?? ApiService(),
-      searchUrl = searchUrl ?? dotenv.env['BASE_URL_SEARCH_MOVIE'] ?? "";
+      searchUrl = searchUrl ?? AppConfig.baseUrlSearchMovie;
 
   @override
   Future<List<Movie>?> discoverMovie(int page) async {
@@ -20,18 +20,12 @@ class MovieService implements MovieRepo {
 
   @override
   Future<List<Movie>?> searchMovie(String query, int page) async {
-    try {
-      final res = await dio.get(
-        searchUrl,
-        queryParameters: {'query': query, 'page': page},
-      );
+    final res = await dio.get(
+      searchUrl,
+      queryParameters: {'query': query, 'page': page},
+    );
 
-      return (res.data['results'] as List)
-          .map((e) => Movie.fromJson(e))
-          .toList();
-    } catch (e) {
-      return null;
-    }
+    return (res.data['results'] as List).map((e) => Movie.fromJson(e)).toList();
   }
 
   @override

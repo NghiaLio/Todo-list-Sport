@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../bloc/movieDetail/movieDetailCubit.dart';
 import '../bloc/movieDetail/movieDetailState.dart';
+import '../constants/app_config.dart';
 import '../constants/theme.dart';
 import '../views/skeleton/tv_show_detail_skeleton.dart';
 import '../widgets/media_detail_widgets.dart';
@@ -45,8 +45,7 @@ class __MovieScreenDetailViewState extends State<_MovieScreenDetailView> {
   }
 
   void _onPlayTrailer(String key) async {
-    final youtubeUrl =
-        dotenv.env['BASE_URL_YOUTUBE'] ?? 'https://www.youtube.com/watch?v=';
+    final youtubeUrl = AppConfig.baseUrlYoutube;
     final url = Uri.parse('$youtubeUrl$key');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {

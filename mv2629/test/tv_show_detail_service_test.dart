@@ -145,15 +145,12 @@ void main() {
       },
     );
 
-    test('getTvShowDetail returns null when an exception occurs', () async {
+    test('getTvShowDetail throws when an exception occurs', () async {
       // Arrange
       when(() => mockApiService.get(any())).thenThrow(Exception('API Error'));
 
-      // Act
-      final result = await tvShowDetailService.getTvShowDetail(1);
-
       // Assert
-      expect(result, isNull);
+      expect(() => tvShowDetailService.getTvShowDetail(1), throwsException);
     });
 
     test('getTvShowVideoTrailer returns null when list is empty', () async {

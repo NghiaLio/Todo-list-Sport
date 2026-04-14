@@ -1,4 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../constants/app_config.dart';
 import '../../models/tvShow.dart';
 import '../../models/tvShowDetailModel.dart';
 import '../../repo/dioClient.dart';
@@ -18,60 +18,46 @@ class TvShowDetailService implements TvShowDetailRepo {
     String? baseUrlTvShowSimilar,
     String? baseUrlTvShowVideoTrailer,
   }) : dio = apiService ?? ApiService(),
-       baseUrlImage = baseUrlImage ?? dotenv.env['BASE_URL_IMAGE'] ?? "",
+       baseUrlImage = baseUrlImage ?? AppConfig.baseUrlImage,
        baseUrlTvShowDetail =
-           baseUrlTvShowDetail ?? dotenv.env['BASE_URL_GET_TV_DETAIL'] ?? "",
+           baseUrlTvShowDetail ?? AppConfig.baseUrlGetTvDetail,
        baseUrlTvShowSimilar =
-           baseUrlTvShowSimilar ?? dotenv.env['BASE_URL_GET_TV_SIMILAR'] ?? "",
+           baseUrlTvShowSimilar ?? AppConfig.baseUrlGetTvSimilar,
        baseUrlTvShowVideoTrailer =
-           baseUrlTvShowVideoTrailer ??
-           dotenv.env['BASE_URL_GET_VIDEO_TRAILER'] ??
-           "";
+           baseUrlTvShowVideoTrailer ?? AppConfig.baseUrlGetTvVideoTrailer;
 
   @override
   Future<TvDetail?> getTvShowDetail(int id) async {
-    try {
-      final res = await dio.get(
-        baseUrlTvShowDetail.replaceAll('{series_id}', id.toString()),
-      );
-      return TvDetail.fromJson(res.data);
-    } catch (e) {
-      return null;
-    }
+    final res = await dio.get(
+      baseUrlTvShowDetail.replaceAll('{series_id}', id.toString()),
+    );
+    return TvDetail.fromJson(res.data);
   }
 
   @override
   Future<List<TvShow>?> getSimilarTvShows(int id, int page) async {
-    try {
-      final res = await dio.get(
-        baseUrlTvShowSimilar.replaceAll('{series_id}', id.toString()),
-        queryParameters: {'page': page},
-      );
-      return (res.data['results'] as List)
-          .map((e) => TvShow.fromJson(e))
-          .toList();
-    } catch (e) {
-      return null;
-    }
+    final res = await dio.get(
+      baseUrlTvShowSimilar.replaceAll('{series_id}', id.toString()),
+      queryParameters: {'page': page},
+    );
+    return (res.data['results'] as List)
+        .map((e) => TvShow.fromJson(e))
+        .toList();
   }
 
   @override
   Future<String?> getTvShowVideoTrailer(int id) async {
-    try {
-      final res = await dio.get(
-        baseUrlTvShowVideoTrailer.replaceAll('{series_id}', id.toString()),
-      );
-      final results = res.data['results'] as List;
-      if (results.isNotEmpty) {
-        for (var video in results) {
-          if (video['site'] == 'YouTube' && video['type'] == 'Trailer') {
-            return video['key'];
-          }
+    final res = await dio.get(
+      baseUrlTvShowVideoTrailer.replaceAll('{series_id}', id.toString()),
+    );
+    final results = res.data['results'] as List;
+    if (results.isNotEmpty) {
+      for (var video in results) {
+        if (video['site'] == 'YouTube' && video['type'] == 'Trailer') {
+          return video['key'];
         }
       }
-      return null;
-    } catch (e) {
-      return null;
     }
+    return null;
   }
 }
