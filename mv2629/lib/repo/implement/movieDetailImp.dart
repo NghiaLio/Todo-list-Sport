@@ -1,4 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../constants/app_config.dart';
 import '../../models/movie.dart';
 import '../../models/movieDetailModel.dart';
 import '../../repo/dioClient.dart';
@@ -18,62 +18,44 @@ class MovieDetailService implements MovieDetailRepo {
     String? baseUrlMovieSimilar,
     String? baseUrlMovieVideoTrailer,
   }) : dio = apiService ?? ApiService(),
-       baseUrlImage = baseUrlImage ?? dotenv.env['BASE_URL_IMAGE'] ?? "",
+       baseUrlImage = baseUrlImage ?? AppConfig.baseUrlImage,
        baseUrlMovieDetail =
-           baseUrlMovieDetail ?? dotenv.env['BASE_URL_GET_MOVIE_DETAIL'] ?? "",
+           baseUrlMovieDetail ?? AppConfig.baseUrlGetMovieDetail,
        baseUrlMovieSimilar =
-           baseUrlMovieSimilar ??
-           dotenv.env['BASE_URL_GET_MOVIE_SIMILAR'] ??
-           "",
+           baseUrlMovieSimilar ?? AppConfig.baseUrlGetMovieSimilar,
        baseUrlMovieVideoTrailer =
-           baseUrlMovieVideoTrailer ??
-           dotenv.env['BASE_URL_GET_MOVIE_VIDEO_TRAILER'] ??
-           "";
+           baseUrlMovieVideoTrailer ?? AppConfig.baseUrlGetMovieVideoTrailer;
 
   @override
   Future<MovieDetail?> getMovieDetail(int id) async {
-    try {
-      final res = await dio.get(
-        baseUrlMovieDetail.replaceAll('{movie_id}', id.toString()),
-      );
-      return MovieDetail.fromJson(res.data);
-    } catch (e) {
-      return null;
-    }
+    final res = await dio.get(
+      baseUrlMovieDetail.replaceAll('{movie_id}', id.toString()),
+    );
+    return MovieDetail.fromJson(res.data);
   }
 
   @override
   Future<List<Movie>?> getSimilarMovies(int id, int page) async {
-    try {
-      final res = await dio.get(
-        baseUrlMovieSimilar.replaceAll('{movie_id}', id.toString()),
-        queryParameters: {'page': page},
-      );
-      return (res.data['results'] as List)
-          .map((e) => Movie.fromJson(e))
-          .toList();
-    } catch (e) {
-      return null;
-    }
+    final res = await dio.get(
+      baseUrlMovieSimilar.replaceAll('{movie_id}', id.toString()),
+      queryParameters: {'page': page},
+    );
+    return (res.data['results'] as List).map((e) => Movie.fromJson(e)).toList();
   }
 
   @override
   Future<String?> getMovieVideoTrailer(int id) async {
-    try {
-      final res = await dio.get(
-        baseUrlMovieVideoTrailer.replaceAll('{movie_id}', id.toString()),
-      );
-      final results = res.data['results'] as List;
-      if (results.isNotEmpty) {
-        for (var video in results) {
-          if (video['site'] == 'YouTube' && video['type'] == 'Trailer') {
-            return video['key'];
-          }
+    final res = await dio.get(
+      baseUrlMovieVideoTrailer.replaceAll('{movie_id}', id.toString()),
+    );
+    final results = res.data['results'] as List;
+    if (results.isNotEmpty) {
+      for (var video in results) {
+        if (video['site'] == 'YouTube' && video['type'] == 'Trailer') {
+          return video['key'];
         }
       }
-      return null;
-    } catch (e) {
-      return null;
     }
+    return null;
   }
 }

@@ -2,7 +2,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../constants/app_config.dart';
 
 class ApiException implements Exception {
   final int? statusCode;
@@ -20,19 +20,22 @@ class ApiService {
   static ApiService? _instance;
 
   factory ApiService({Dio? dio}) {
-    if (_instance == null || dio != null) {
-      _instance = ApiService._internal(dio: dio);
+    if (dio != null) {
+      return ApiService._internal(dio: dio);
+    }
+    if (_instance == null) {
+      _instance = ApiService._internal();
     }
     return _instance!;
   }
 
   ApiService._internal({Dio? dio}) : _dio = dio ?? Dio() {
     if (dio == null) {
-      _dio.options.baseUrl = dotenv.env['URL_DB'] ?? "";
+      _dio.options.baseUrl = AppConfig.apiBaseUrl;
       _dio.options.connectTimeout = const Duration(seconds: 10);
       _dio.options.receiveTimeout = const Duration(seconds: 10);
 
-      final apiKey = dotenv.env['API_KEY'] ?? '';
+      final apiKey = AppConfig.apiKey;
       _dio.interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) {
@@ -53,6 +56,14 @@ class ApiService {
     }
   }
 
+  ApiException _toApiException(DioException e) {
+    final resp = e.response;
+    if (resp != null) {
+      return ApiException(resp.statusCode, resp.data);
+    }
+    return ApiException(null, {'message': e.message, 'type': e.type.name});
+  }
+
   Future<Response> post(String path, {dynamic data}) async {
     try {
       // Don't set Content-Type when sending FormData, let Dio handle it
@@ -65,10 +76,7 @@ class ApiService {
       // If server provided structured JSON, throw ApiException with that data
       final resp = e.response;
       debugPrint('API error [${resp?.statusCode}]: ${resp?.data}');
-      if (resp != null && resp.data != null) {
-        throw ApiException(resp.statusCode, resp.data);
-      }
-      throw Exception(e.message);
+      throw _toApiException(e);
     }
   }
 
@@ -80,11 +88,8 @@ class ApiService {
       return await _dio.get(path, queryParameters: queryParameters);
     } on DioException catch (e) {
       final resp = e.response;
-      if (resp != null && resp.data != null) {
-        debugPrint('API error [${resp.statusCode}]: ${resp.data}');
-        throw ApiException(resp.statusCode, resp.data);
-      }
-      throw Exception(e.message);
+      debugPrint('API error [${resp?.statusCode}]: ${resp?.data}');
+      throw _toApiException(e);
     }
   }
 
@@ -93,11 +98,8 @@ class ApiService {
       return await _dio.put(path, data: data);
     } on DioException catch (e) {
       final resp = e.response;
-      if (resp != null && resp.data != null) {
-        debugPrint('API error [${resp.statusCode}]: ${resp.data}');
-        throw ApiException(resp.statusCode, resp.data);
-      }
-      throw Exception(e.message);
+      debugPrint('API error [${resp?.statusCode}]: ${resp?.data}');
+      throw _toApiException(e);
     }
   }
 }

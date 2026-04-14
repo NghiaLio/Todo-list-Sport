@@ -92,7 +92,7 @@ void main() {
       ).called(1);
     });
 
-    test('discoverMovie returns null when an exception occurs', () async {
+    test('discoverMovie throws when an exception occurs', () async {
       when(
         () => mockApiService.get(
           any(),
@@ -100,9 +100,7 @@ void main() {
         ),
       ).thenThrow(Exception('API Error'));
 
-      final result = await movieService.discoverMovie(1);
-
-      expect(result, isNull);
+      expect(() => movieService.discoverMovie(1), throwsException);
     });
   });
 
@@ -173,23 +171,26 @@ void main() {
       expect(result.first.id, 1);
     });
 
-    test('applyFilter excludes item without releaseDate when year filter active', () {
-      final movies = [
-        Movie(
-          id: 1,
-          name: 'Football Hero',
-          overview: 'sport documentary',
-          genreIds: const [99],
-          voteAverage: 8.0,
-          releaseDate: null,
-        ),
-      ];
+    test(
+      'applyFilter excludes item without releaseDate when year filter active',
+      () {
+        final movies = [
+          Movie(
+            id: 1,
+            name: 'Football Hero',
+            overview: 'sport documentary',
+            genreIds: const [99],
+            voteAverage: 8.0,
+            releaseDate: null,
+          ),
+        ];
 
-      final filter = FilterMovie(fromYear: 2020);
+        final filter = FilterMovie(fromYear: 2020);
 
-      final result = movieService.applyFilter(movies, filter);
+        final result = movieService.applyFilter(movies, filter);
 
-      expect(result, isEmpty);
-    });
+        expect(result, isEmpty);
+      },
+    );
   });
 }

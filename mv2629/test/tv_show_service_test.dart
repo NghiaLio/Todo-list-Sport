@@ -96,7 +96,7 @@ void main() {
       ).called(1);
     });
 
-    test('discoverTv returns null when an exception occurs', () async {
+    test('discoverTv throws when an exception occurs', () async {
       // Arrange
       when(
         () => mockApiService.get(
@@ -105,11 +105,8 @@ void main() {
         ),
       ).thenThrow(Exception('API Error'));
 
-      // Act
-      final result = await tvShowService.discoverTv(1);
-
       // Assert
-      expect(result, isNull);
+      expect(() => tvShowService.discoverTv(1), throwsException);
     });
   });
 
