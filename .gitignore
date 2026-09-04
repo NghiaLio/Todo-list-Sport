@@ -117,3 +117,25 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+
+# Project-specific rules formerly in mv2629/.gitignore
+*.log
+*.pyc
+.DS_Store
+.atom/
+.build/
+.svn/
+.swiftpm/
+migrate_working_dir/
+*.iml
+*.ipr
+*.iws
+.idea/
+designer/
+#.vscode/
+.pub-cache/
+/coverage/
+app.*.map.json
+/android/app/debug
+/android/app/profile
+/android/app/release
