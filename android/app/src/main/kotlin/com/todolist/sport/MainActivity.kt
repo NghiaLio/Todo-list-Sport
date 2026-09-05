@@ -1,4 +1,4 @@
-package com.example.mv2629
+package com.todolist.sport
 
 import io.flutter.embedding.android.FlutterActivity
 
