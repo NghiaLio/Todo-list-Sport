@@ -24,7 +24,7 @@ class LocalNotificationService {
     tz.setLocalLocation(tz.getLocation('America/New_York')); // Change to your local timezone if needed
 
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('ic_notification');
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
@@ -79,7 +79,7 @@ class LocalNotificationService {
           channelDescription: 'Reminder for tasks 15 minutes before due time',
           importance: Importance.max,
           priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
+          icon: 'ic_notification',
         );
 
     const NotificationDetails platformDetails = NotificationDetails(
